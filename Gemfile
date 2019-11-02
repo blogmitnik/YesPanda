@@ -30,7 +30,7 @@ group :assets do
   #gem 'sass-rails'
   #gem 'bootstrap-sass', '~> 2.3.2'
   # bootstrap-sass is no longer compatible with Rails 3. The latest version of bootstrap-sass compatible with Rails 3.2 is v3.1.1.0
-  gem 'bootstrap-sass', '~> 3.1.1.0'
+  gem 'bootstrap-sass', '~> 3.4.1'
   gem 'sass-rails', '>= 3.2'
   gem 'sprockets-rails'
   gem 'sprockets'
