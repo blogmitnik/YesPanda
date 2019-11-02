@@ -1,0 +1,210 @@
+- if @reports.count > 0
+  .table-responsive.record_lists
+    #report_lists_filter
+      - if controller.controller_name == "stations" || (controller.controller_name == "reports" && params[:station] != "")
+        #tab.btn-group{"data-toggle" => "buttons-radio"}
+          - if params[:data_period].nil?
+            %a.btn.btn-large.btn-default.active{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :date => params[:date], :build => params[:build]), "data-remote" => "true"}
+              %span.glyphicon.glyphicon-calendar
+              Daily Data
+            %a.btn.btn-large.btn-default{:class => active_class(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :build => params[:build], :data_period => 'hourly', :date => params[:date]), :href => url_for(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :date => params[:date], :build => params[:build], :data_period => 'hourly'), "data-remote" => "true"} 
+              %span.glyphicon.glyphicon-time
+              Hourly Data
+          -else
+            %a.btn.btn-large.btn-default{:class => active_class(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :data_period => 'latest_hour', :date => params[:date], :build => params[:build]), :href => url_for(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :date => params[:date], :build => params[:build]), "data-remote" => "true"}
+              %span.glyphicon.glyphicon-calendar
+              Daily Data
+            %a.btn.btn-large.btn-default{:class => active_class(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :data_period => 'hourly', :date => params[:date], :build => params[:build]), :href => url_for(:controller => controller.controller_name, :action => controller.action_name, :product_id => params[:product_id], :my_post_id => params[:my_post_id], :utf8 => params[:utf8], :station => params[:station], :config => params[:config], :date_range => params[:date_range], :commit => params[:commit], :date => params[:date], :build => params[:build], :data_period => 'hourly'), "data-remote" => "true"}
+              %span.glyphicon.glyphicon-time
+              Hourly Data
+
+      %button.btn.btn-default{"data-toggle" => "modal", :href => "#importCSV"}
+        %span.glyphicon.glyphicon-cloud-upload{"aria-hidden" => "true"}
+        Import File
+    %table#report_lists.table.table-small-font.table-hover.table-striped.table-condensed.dt-responsive.infinite-table{:style => "width:100%;"}
+      %thead
+        %tr
+          %th Model
+          %th Stage
+          %th Seqno
+          %th Station
+          %th Config
+          %th Accu
+          %th Daily
+          %th FP Accu
+          %th FP Daily
+          %th Published
+          %th Option
+      %tbody
+        = render :partial => "shared/items", :object => @reports
+- else
+  .well.record_lists{:style => "margin-top: 10px;"}
+    .blankslate.text-center
+      %h3 No Data
+      %p No yield report data to show for selected time interval
+
+:javascript
+  $(document).ready(function(){
+    $(window).scroll(function () {
+      more_reports_url = $('#paginator a[rel=next]').attr('href');
+      if (more_reports_url && $(window).scrollTop() > $(document).height() - $(window).height() - 200) {
+        $('#paginator').html('<div class="loading">Loading reports...</div>');
+        $.getScript(more_reports_url);
+      }
+      if ($(this).scrollTop() > 2500) {
+        $('#back-to-top').fadeIn();
+      }
+      else {
+        $('#back-to-top').fadeOut();
+      }
+    });
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('#back-to-top').tooltip('hide');
+      $('body,html').animate({
+        scrollTop: 0
+      }, 800);
+      return false;
+    });    
+    $('#back-to-top').tooltip('show');
+    // Click the Load more report button
+    $('#paginator').click(function () {
+      $('#paginator').html('<div class="loading">Loading reports...</div>');
+    }); 
+  });
+
+  jQuery(function() {
+    initPage();
+  });
+
+  $(window).bind('page:load', function() {
+    initPage();
+  });
+
+  function initPage() {
+    // Bind progress buttons and simulate loading progress
+    //Ladda.bind( '#report_lists button', { timeout: 2000 } );
+    Ladda.bind( '#report_lists button', {
+      callback: function( instance ) {
+        var progress = 0;
+        var interval = setInterval( function() {
+          progress = Math.min( progress + Math.random() * 0.1, 1 );
+          instance.setProgress( progress );
+
+          if( progress === 1 ) {
+            instance.stop();
+            clearInterval( interval );
+          }
+        }, 200 );
+      }
+    });
+
+    // hide spinner
+    $(".sk-three-bounce").hide();
+
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
+    $('.dropdown-toggle').dropdown();
+
+    $('.table-responsive').responsiveTable({
+      pattern: 'priority-columns',
+      addFocusBtn: false
+    });
+
+    $("#report_lists").dataTable({
+      retrieve: true,
+      destroy: true,
+      responsive: true,
+      paging: false,
+      searching: false,
+      info: false,
+      lengthChange: false,
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'print',
+          text: '<span class="glyphicon glyphicon-print"></span> Print',
+          titleAttr: 'Print'
+        },
+        {
+          extend: 'csvHtml5',
+          text: '<span class="glyphicon glyphicon-export"></span> CSV',
+          titleAttr: 'Export to CSV'
+        },
+        {
+          extend: 'pdfHtml5',
+          text: '<span class="glyphicon glyphicon-export"></span> PDF',
+          titleAttr: 'Export to PDF',
+          orientation: 'landscape',
+          pageSize: 'LEGAL'
+        }
+      ],
+      columns: [
+        {
+          width: "null",
+          className: "row_config",
+          searchable: false,
+          orderable: false,
+          responsivePriority: 1
+        }, {
+          width: "null",
+          orderable: false,
+          searchable: false,
+          responsivePriority: 2
+        }, {
+          width: "null",
+          className: "row_config",
+          searchable: false,
+          responsivePriority: 3
+        }, {
+          width: "null",
+          className: "row_config",
+          searchable: true,
+          responsivePriority: 4
+        }, {
+          width: "null",
+          className: "row_config",
+          searchable: true,
+          orderable: false,
+          responsivePriority: 5
+        }, {
+          width: "null",
+          className: "center",
+          searchable: false,
+          orderable: false,
+          responsivePriority: 6
+        }, {
+          width: "null",
+          className: "center",
+          searchable: false,
+          orderable: false,
+          responsivePriority: 7
+        }, {
+          width: "null",
+          className: "center",
+          searchable: false,
+          orderable: false,
+          responsivePriority: 8
+        }, {
+          width: "null",
+          className: "center",
+          searchable: false,
+          orderable: false,
+          responsivePriority: 9
+        }, {
+          width: "null",
+          className: "center",
+          orderable: false,
+          searchable: false,
+          responsivePriority: 10
+        }, {
+          width: "null",
+          className: "center",
+          orderable: false,
+          searchable: false,
+          orderable: false,
+          responsivePriority: 11
+        }
+      ]
+    });
+  }

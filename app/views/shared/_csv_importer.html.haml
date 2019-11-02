@@ -1,0 +1,12 @@
+#importCSV.modal{"aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1", "data-backdrop" => "true", "data-keyboard" => "false"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+        %h4.modal-title Import Yield Report
+      .modal-body
+        %strong Pick up CSV file from your folder
+        %p.text-danger or choose a folder that contains CSV files (for Google Chrome)
+        #import-yield-report
+          = render :partial => "shared/import_form"

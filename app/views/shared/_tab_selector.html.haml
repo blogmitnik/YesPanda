@@ -1,0 +1,30 @@
+%ul.nav.nav-tabs{:style => "margin-bottom: 5px;"}
+  - if params[:no_date_range].nil?
+    %li.active{:role => "presentation"}
+      %a{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :from_report => 'all', :from_report => params[:from_report]), "data-remote" => "true"}
+        %span.glyphicon.glyphicon-cog
+        All Configs
+        - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :page => params[:page])
+          %span.badge= @reports_for_cart.count.to_i
+  - else
+    %li{:role => "presentation", :class => active_class(:controller => controller.controller_name, :action => controller.action_name, :show_config => 'all', :from_report => params[:from_report], :page => params[:page])}
+      %a{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :show_config => 'all', :from_report => params[:from_report]), "data-remote" => "true"}
+        %span.glyphicon.glyphicon-cog
+        All Configs
+        - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :page => params[:page], :show_config => 'all')
+          %span.badge= @reports_for_cart.count.to_i
+
+  / Show tab for Search results
+  - if !params[:no_date_range].nil?
+    %li.active{:role => "presentation"}
+      %a{:href => "#", "data-remote" => "true"}
+        %span.glyphicon.glyphicon-search
+        Search Result
+        - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :page => params[:page])
+          %span.badge= @reports_for_cart.count.to_i
+
+:javascript
+  $(document).ready(function() {
+    // hide spinner
+    $(".sk-three-bounce").hide();
+  });

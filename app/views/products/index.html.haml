@@ -1,0 +1,108 @@
+- navigation_add 'Products', products_path
+
+%h2.page-header
+  Products
+  %small
+    = @products.count
+    product(s)
+%p.lead Click one of the product to check all builds for it
+
+.row
+  .product-lists
+    .col-md-8.col-md-offset-2
+      .panel.panel-custom.panel-default
+        .panel-body
+          .pull-right
+            .table-filter
+              .btn-group
+                %button.btn.btn-primary{"data-toggle" => "modal", :href => "#importCSV"}
+                  %span.glyphicon.glyphicon-cloud-upload{"aria-hidden" => "true"}
+                  Import File
+          .table-container
+            %table.table.table-hover.table-filter
+              %tbody
+                - @products.each do |product|
+                  %tr{id: "product_row_#{product.id}"}
+                    %td{:style => "vertical-align: middle;"}
+                      .ckbox
+                        = check_box_tag "product_ids[]", product.id, false, :id => "product_ids_#{product.id}"
+                        %label{:for => "product_ids_#{product.id}"}
+                    %td{:style => "vertical-align: middle;"}
+                      %a.star{:href => "javascript:;", "data-toggle" => "tooltip", title: "No function yet"}
+                        %i.glyphicon.glyphicon-star
+                    %td
+                      .media
+                        .media-body
+                          %span.media-meta.pull-right= product.created_at.to_date.to_formatted_s(:long)
+                          %h4.title
+                            = link_to product.title, product_my_posts_path(product)
+                            %span#delete-product.pull-right.dont_show
+                              /= link_to '(Delete)', product_path(product), data: { confirm: "All imported yield files and records from #{product.title} will be permanently deleted. Are you sure?" }, method: :delete, :class => "text-danger"
+                              = link_to '(Delete)', '#', :class => "text-danger", id: "delete-a-product", "data-product-name" => "#{product.title}", "data-product-id" => "#{product.id}"
+                          %p.summary
+                            - if product.posts.count > 0
+                              = product.posts.count.to_i
+                              build(s) included in the product
+                            - else
+                              No build included in the product
+
+= render :partial => "shared/csv_importer"
+
+:javascript
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $('.star').on('click', function () {
+      $(this).toggleClass('star-checked');
+    });
+
+    $('.ckbox label').on('click', function () {
+      $(this).parents('tr').toggleClass('selected');
+      var checked = $(this).find("input:checkbox").is(":checked");
+      if(checked){
+        $(this).parents('tr').find('#delete-product').removeClass('dont_show');
+      }
+      else {
+        $(this).parents('tr').find('#delete-product').toggleClass('dont_show');
+      }
+    });
+  });
+
+  $("a#delete-a-product").click(function() {
+    var productName = $(this).attr("data-product-name");
+    var productId = $(this).attr("data-product-id");
+    deleteProduct(productName, productId);
+  });
+
+  function deleteProduct(productName, productId) {
+    swal({
+      title: "Are you sure?", 
+      text: "You want to delete " + productName, 
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonClass: "btn-warning",
+      confirmButtonText: "Delete it!",
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true
+    }, function() {
+      $.ajax({
+        url: "/products/" + productId,
+        type: "DELETE",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        swal("Successfully Deleted!", productName + " was successfully deleted!", "success");
+        $("#product_row_" + productId).fadeOut();
+
+        $('button.confirm').click(function() {
+          setTimeout(function(){
+            $(location).attr('href', "/products")
+          }, 200);
+        });
+      })
+      .error(function(data) {
+        swal("Something went wrong", "We couldn't connect to the server!", "error");
+      });
+    });
+  }

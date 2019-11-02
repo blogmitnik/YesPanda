@@ -1,0 +1,17 @@
+- build_type = params[:build].nil? ? "" : " (" + params[:build].to_s.upcase + ")"
+
+- navigation_add 'Products', products_path
+- navigation_add @product.title, product_my_posts_path(@product)
+- navigation_add @post.title + build_type, product_my_post_path(@product, @post, :build => params[:build])
+- navigation_add @station.name, product_my_post_station_path(@product, @post, @station)
+
+%h2.page-header
+  = @post.title + build_type
+  %small= @station.name
+  
+.row
+  .container
+    .form-group
+    - if @reports.count > 0
+      #yield-report
+        = render :partial => "shared/yield_report"

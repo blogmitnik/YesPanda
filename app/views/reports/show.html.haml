@@ -1,0 +1,114 @@
+- build_type = params[:build].nil? ? "" : " (" + params[:build].to_s.upcase + ")"
+
+- navigation_add 'Products', products_path
+- navigation_add @product.title + ' Builds', product_my_posts_path(@product)
+- navigation_add @post.title + build_type, product_my_post_path(@product, @post, :build => params[:build])
+- navigation_add @report.station_name, product_my_post_report_path(@product, @post, @report)
+
+%h2.page-header
+  = @report.station_name
+  %small= @report.published_at.to_formatted_s(:long)
+
+.row
+  .container
+    .panel.panel-default
+      .panel-heading
+        Detail Information
+      .panel-body
+        .table-responsive
+          %table.table.table-bordered.table-striped{:style => "width: 100%;"}
+            %thead
+              %tr
+                %th Item
+                %th Value
+            %tbody
+              %tr
+                %th Accu Yield
+                %td= render_yield_rate(@report.yield_rate)
+              %tr
+                %th Daily Yield
+                %td= render_yield_rate(@report.yield_rate_today)
+              %tr
+                %th FP Accu Yield
+                %td= render_yield_rate(@report.fp_yield_rate)
+              %tr
+                %th FP Daily Yield
+                %td= render_yield_rate(@report.fp_yield_rate_today)
+              %tr
+                %th Input Today
+                %td= @report.input_today
+              %tr
+                %th Output Today
+                %td= @report.output_today
+              %tr
+                %th Seqno
+                %td= @report.seqno
+              %tr
+                %th Config
+                -if @report.config == 'ALL'
+                  %td= @report.config
+                - else
+                  %td
+                    %span.badge.progress-bar-info
+                      = @report.config
+              %tr
+                %th Input
+                %td= @report.input
+              %tr
+                %th PFirstPass
+                %td= @report.first_pass
+              %tr
+                %th PRetestPass
+                %td= @report.retest_pass
+              %tr
+                %th Fail
+                %td= @report.fail
+              %tr
+                %th RetestProcess
+                %td= @report.retest_process
+              %tr
+                %th TestWF
+                %td= @report.test_waive
+              %tr
+                %th DesignWF
+                %td= @report.design_waive
+              %tr
+                %th COFWF
+                %td= @report.cof_waive
+              %tr
+                %th RDArea
+                %td= @report.rd_area
+              %tr
+                %th BPL
+                %td= @report.bpl
+              %tr
+                %th NTF
+                %td= @report.ntf
+              %tr
+                %th FailureWF
+                %td= @report.failure_waive
+              %tr
+                %th RepairOK
+                %td= @report.repaire_ok
+              %tr
+                %th INLRepair
+                %td= @report.inl_repaire
+              %tr
+                %th DIP
+                %td= @report.dip
+              %tr
+                %th Defect
+                %td= @report.defect
+              %tr
+                %th Fail_Borrow
+                %td= @report.fail_borrow
+              %tr
+                %th Pass_Borrow
+                %td= @report.pass_borrow
+              %tr
+                %th Type
+                %td= @report.yield_type
+              %tr
+                %th Source File
+                %td= link_to @report.yield_file.file_name, product_my_post_yield_file_path(@product, @post, @report.yield_file)
+                //%td= @report.yield_file.file_name

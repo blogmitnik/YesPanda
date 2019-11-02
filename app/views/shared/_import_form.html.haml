@@ -1,0 +1,80 @@
+.form-group
+  /= label_tag :file, "Choose CSV file to import", class: "control-label file_upload"
+  = form_tag(reports_path, method: 'post', remote: true, multipart: true) do
+    %p
+      %input#js-csv-upload.file-loading{:accept => "text/csv", :multiple => "multiple", :name => "file[]", :type => "file", :webkitdirectory => ""}
+      #kv-success-1.alert.alert-success.fade.in{:style => "margin-top:10px; display:none"}
+      #kv-error-1{:style => "margin-top:10px; display:none"}
+      /= file_field_tag :file, class: 'js-csv-upload', accept: 'text/csv'
+
+:javascript
+  jQuery(function() {
+    var importedFiles = 0
+    var notImportedFiles = 0
+    $('#js-csv-upload').fileinput({
+      uploadUrl: "/reports",
+      uploadAsync: true,
+      showPreview: false,
+      showUpload: true,
+      elErrorContainer: '#kv-error-1',
+      browseOnZoneClick: true,
+      browseClass: 'btn btn-info fileinput-browse-button',
+      browseLabel: "Pick Files",
+      browseIcon: "<i class=\"glyphicon glyphicon-folder-open\"></i> ",
+      removeClass: 'btn btn-danger',
+      removeIcon: "<i class=\"glyphicon glyphicon-trash\"></i> ",
+      removeLabel: 'Cancel',
+      uploadClass: 'btn btn-success fileinput-upload-button',
+      uploadIcon: "<i class=\"glyphicon glyphicon-cloud-upload\"></i> ",
+      uploadLabel: 'Import',
+      indicatorNew: '<i class="glyphicon glyphicon-hand-down text-warning"></i>',
+      indicatorSuccess: '<i class="glyphicon glyphicon-ok-sign file-icon-large text-success"></i>',
+      indicatorError: '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>',
+      indicatorLoading: '<i class="glyphicon glyphicon-hand-up text-muted"></i>',
+      indicatorNewTitle: 'Not uploaded yet',
+      indicatorSuccessTitle: 'Uploaded',
+      indicatorErrorTitle: 'Upload Error',
+      indicatorLoadingTitle: 'Uploading ...',
+      allowedFileExtensions: ['csv'],
+      msgValidationError: '<span class="text-danger">\n  <i class="glyphicon glyphicon-exclamation-sign"></i> Only support CSV file!\n</span>'
+    }).on('filebatchselected', function(event, files) {
+        $('#kv-success-1').hide();
+        $('#kv-error-1').hide();
+        var filesCount = $('#js-csv-upload').fileinput('getFilesCount');
+        console.log(filesCount + " files selected");
+    }).on('filebatchpreupload', function(event, data, id, index) {
+        $('#kv-success-1').html('<h4>Upload Status</h4><div id="file-info"></div><ul></ul>').hide();
+        $('#kv-error-1').html('<h4>Skipped Files</h4><ul></ul>').hide();
+    }).on('fileuploaded', function(event, data, id, index) {
+        importedFiles += 1;
+        console.log(importedFiles + " files imported");
+        var fname = data.files[index].name,
+            out = '<li>' + 'Uploaded file # ' + (index + 1) + ' - ' + fname + ' successfully.' + '</li>';
+        $('#kv-success-1 ul').append(out);
+        $('#kv-success-1').fadeIn('slow');
+    }).on('fileuploaderror', function(event, data, msg) {
+        notImportedFiles += 1;
+        var form = data.form, files = data.files, extra = data.extra,
+            response = data.response, reader = data.reader;
+        console.log(notImportedFiles + ' File upload error');
+    }).on('filebatchuploadcomplete', function(event, files, extra) {
+        console.log('File batch upload complete');
+        var out = '<p class="text-primary">' + importedFiles + ' file(s) successfully imported.' + ' ' + notImportedFiles + ' file(s) skipped from import.' + '</p>';
+        $('#kv-success-1 #file-info').append(out);
+        // Reset counter
+        importedFiles = 0
+        notImportedFiles = 0
+    }).on('filebrowse', function(event) {
+        console.log("File browse triggered.");
+    }).on('filepreajax', function(event, previewId, index) {
+        console.log('File pre ajax triggered');
+    }).on('filepreupload', function(event, data, previewId, index) {
+        var form = data.form, files = data.files, extra = data.extra,
+            response = data.response, reader = data.reader;
+        console.log('File pre upload triggered');
+    }).on('fileclear', function(event) {
+        $('#kv-success-1').hide();
+        $('#kv-error-1').hide();
+        console.log("file cleared");
+    });
+  });

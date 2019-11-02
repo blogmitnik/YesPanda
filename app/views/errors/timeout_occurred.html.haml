@@ -1,0 +1,18 @@
+- navigation_add '524 Timeout', "/"
+
+.row
+  .col-md-12
+    .error-template{:style => "padding: 40px 15px; text-align: center;"}
+      %h2
+        Oops!
+      %h3
+        A timeout occurred!
+      .error-details
+        The origin web server timed out responding to this request. Please try again in a few minutes.
+      .error-actions{:style => "margin-top:15px; margin-bottom:15px;"}
+        %a.btn.btn-primary.btn-lg{:href => "/", :style => "margin-right:10px;"}
+          %span.glyphicon.glyphicon-home
+          Take Me Home
+        %a.btn.btn-default.btn-lg{:href => "/contact", :style => "margin-right:10px;"}
+          %span.glyphicon.glyphicon-envelope
+          Contact Support

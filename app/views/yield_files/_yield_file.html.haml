@@ -1,0 +1,9 @@
+%li.list-group-item{:id => "file_#{file.id}"}
+  %span.badge
+    = file.reports.count.to_i
+  .media-left
+    %a{:href => product_my_post_yield_file_path(@product, @post, file), data: { method: :delete, confirm: 'All the yield records belong to this file will be also deleted. Are you sure?' }}
+      %span.glyphicon.glyphicon-trash
+  .media-body
+    %a{:href => product_my_post_yield_file_path(@product, @post, file)}
+      =file.file_name

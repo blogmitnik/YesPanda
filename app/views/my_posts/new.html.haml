@@ -1,0 +1,9 @@
+- navigation_add 'Products', products_path
+- navigation_add 'Add build & stage', new_product_my_post_path
+
+%h2.page-header
+  = @product.title
+  %small Add build & stage
+%p.lead Create new build & stage to organize and manage daily yield report
+
+= render 'form'

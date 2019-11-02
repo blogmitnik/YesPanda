@@ -1,0 +1,19 @@
+- navigation_add 'Welcome', "/"
+
+.media
+  .media-body
+    .col-md-8.col-md-offset-2
+      .welcome
+        %h2 Hey dude!
+        - unless user_signed_in?
+          %p
+            Please 
+            %a{:href => "/users/sign_in"} sign in
+            or
+            %a{:href => "/users/sign_up"} sign up
+        - else
+          %p
+            Click the 
+            %strong Report 
+            menu to start!
+        =image_tag "yespanda_banner.png", class: 'img-responsive'

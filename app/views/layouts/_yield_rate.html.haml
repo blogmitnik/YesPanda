@@ -1,0 +1,18 @@
+- if yield_rate.nil?
+  %span.label.label-default no input
+- elsif yield_rate > 100.00
+  %span.badge.progress-bar-info
+    = yield_rate
+    \%
+- elsif yield_rate.between?(99.51, 100.00)
+  %span.badge.progress-bar-success
+    = yield_rate
+    \%
+- elsif yield_rate.between?(90.00, 99.50)
+  %span.badge.progress-bar-warning
+    = yield_rate
+    \%
+- elsif yield_rate.between?(0.00, 89.99)
+  %span.badge.progress-bar-danger
+    = yield_rate
+    \%

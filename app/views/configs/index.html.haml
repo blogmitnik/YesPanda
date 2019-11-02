@@ -1,0 +1,18 @@
+- build_type = params[:build].nil? ? "" : " (" + params[:build].to_s.upcase + ")"
+
+- navigation_add 'Products', products_path
+- navigation_add @product.title + ' Builds', product_my_posts_path(@product)
+- navigation_add @post.title + build_type, product_my_post_path(@product, @post, build: params[:build])
+- navigation_add @report.station_name, product_my_post_station_path(@product, @post, @report.station)
+- navigation_add "All Configs", product_my_post_report_configs_path(@product, @post)
+
+%h2.page-header
+  = @report.station_name
+  %small All Configs (#{@report.published_at.to_formatted_s(:long)})
+  
+.row
+  .container
+    .form-group
+    - if @reports.count > 0
+      #yield-report
+        = render :partial => "yield_by_config"

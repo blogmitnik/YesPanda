@@ -1,0 +1,35 @@
+- if params[:product_name].present?
+  %button.btn.btn-basecamp.btn-sm.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+    %span.glyphicon.glyphicon-cog{"aria-hidden" => "true"}
+    = @product.title
+    Builds
+    %span.caret
+    %span.sr-only Toggle Dropdown
+  %ul.dropdown-menu.build
+    - @builds.each do |build|
+      %li
+        %a{:href => product_my_post_path(@product, build)}
+          = build.title
+- else
+  %button.btn.btn-basecamp.btn-sm.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button"}
+    %span.glyphicon.glyphicon-cog{"aria-hidden" => "true"}
+    = @product.title
+    Builds
+    %span.caret
+    %span.sr-only Toggle Dropdown
+  %ul.dropdown-menu.build
+    - @product.posts.each do |post|
+      %li
+        %a{:href => product_my_post_path(@product, post)}
+          = post.title
+      - if post.report_mains.count > 0
+        %li
+          %a{:href => product_my_post_path(@product, post, build: 'main')}
+            = post.title + ' (MAIN)'
+      - if post.report_minis.count > 0
+        %li
+          %a{:href => product_my_post_path(@product, post, build: 'mini')}
+            = post.title + ' (MINI)'
+
+:javascript
+  $('.dropdown-toggle').dropdown();

@@ -1,0 +1,22 @@
+%ol.breadcrumb{:style => "margin-top: 15px;"}
+  %li= link_to "Home", "/"
+  %li.active Apps
+
+%h2.page-header Your authorized apps
+%p.lead Apps that already connected to your account
+.row
+  .container
+    .table-responsive
+      %table.table.table-bordered.table-striped
+        %thead
+          %tr
+            %th Application
+            %th Authorized at
+            %th  
+        %tbody
+          - @applications.each do |application|
+            %tr
+              %td{:style => "vertical-align: middle;"}= application.name
+              %td{:style => "vertical-align: middle;"}= application.created_at.to_datetime.to_formatted_s(:long)
+              %td{:style => "vertical-align: middle;"}= link_to 'Revoke', authorized_application_path(application), :data => { :confirm => 'This is serious monkey business! Are you sure?' }, :method => :delete, :class => 'btn btn-danger'
+

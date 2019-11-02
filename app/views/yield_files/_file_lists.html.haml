@@ -1,0 +1,39 @@
+- if @files.count > 0
+  .pull-right
+    .table-filter
+      .btn-group
+        %button.btn.btn-success.btn-filter{"data-target" => "Sum-All", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-All files only"} Sum All
+        %button.btn.btn-warning.btn-filter{"data-target" => "Sum-Config", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-Config files only"} Sum Config
+        %button.btn.btn-default.btn-filter{"data-target" => "all", :type => "button", "data-toggle" => "tooltip", :title => "Show All types of files"} All Files
+        %button.btn.btn-primary{"data-toggle" => "modal", :href => "#importCSV"}
+          %span.glyphicon.glyphicon-cloud-upload{"aria-hidden" => "true"}
+          Import File
+
+  .table-container
+    %table.table.table-hover.table-filter
+      %tbody
+        - @files.each do |file|
+          // Get substring from file_name
+          - strip_str = file.file_name.gsub('Yield Report','').strip!
+          - strip_str = strip_str[0, strip_str.index('20')-1]
+          %tr{"data-status" => "#{strip_str}", id: "file_row_#{file.id}"}
+            %td{:style => "vertical-align: middle;"}
+              .ckbox
+                = check_box_tag "product_ids[]", file.id, false, id: "file_ids_#{file.id}"
+                %label{:for => "file_ids_#{file.id}"}
+            %td{:style => "vertical-align: middle;"}
+              %a.star{:href => "javascript:;", "data-toggle" => "tooltip", title: "No function yet"}
+                %i.glyphicon.glyphicon-star
+            %td
+              .media
+                .media-body
+                  %span.media-meta.pull-right= file.created_at.to_date.to_formatted_s(:long)
+                  %h4.title
+                    = link_to file.file_name, product_my_post_yield_file_path(@product, @post, file)
+                    %span#delete-file.pull-right.dont_show
+                      = link_to '(Delete)', '#', :class => "text-danger", id: "delete-yield-file", "data-file-id" => "#{file.id}", "data-build-id" => "#{file.post.id}", "data-product-id" => "#{file.post.product.id}"
+                  %p.summary
+                    = file.total_row.to_i
+                    rows of records included
+- else
+  %strong.text-danger No file found

@@ -1,0 +1,4 @@
+o: ActiveSupport::Cache::Entry	:@compressedF:@expires_in0:@created_atf1473255367.929759:@value"ê[I"É$(document).ready(function() {
+    $('#dashboard').parent().append('<li><a href="/oauth/applications">Applications</a></li>');
+});
+:ET

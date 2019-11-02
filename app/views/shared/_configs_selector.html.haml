@@ -1,0 +1,5 @@
+- if @builds.nil? || (params[:product_id] == "" && @builds.count == 0)
+  = text_field_tag :config, params[:config], id: 'search-config', class: 'form-control', placeholder: 'Config Name', :disabled => true
+- else
+  = autocomplete_field_tag :config, '', autocomplete_config_reports_path, id: 'search-config', class: 'form-control', placeholder: 'Config Name', :append_to => "#config-list-suggested", :disabled => true
+  #config-list-suggested

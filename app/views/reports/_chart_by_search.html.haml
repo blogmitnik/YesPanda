@@ -1,0 +1,14 @@
+- if params[:station].present? || params[:config].present?
+  - if params[:station].present? && params[:station] != "" && params[:config].present? && params[:config] != ""
+    = render :partial => "configs/config_yield_chart"
+  - elsif params[:station].present? && params[:station] != ""
+    = render :partial => "stations/station_yield_cart"
+  - elsif params[:config].present? && params[:config] != ""
+    = render :partial => "configs/yield_ratio_chart"
+- else
+  - if params[:from_station].present? && params[:from_station] != ""
+    = render :partial => "stations/station_yield_cart"
+  - elsif params[:from_report].present? && params[:from_report] != ""
+    = render :partial => "configs/yield_ratio_chart"
+  - else
+    = render :partial => "my_posts/worst_yield_cart"

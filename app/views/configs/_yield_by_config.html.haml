@@ -1,0 +1,26 @@
+/#paginator-top
+/  = paginate @reports, remote: true
+.panel.panel-default
+  .panel-heading
+    %span.glyphicon.glyphicon-list
+    = "Yield Report Overview"
+
+  .panel-body
+    #search-box
+      = render :partial => "shared/search_box"
+    #yield-ratio-chart-data{:style => "margin-bottom: 20px"}
+      = render :partial => "yield_ratio_chart"
+    #tab-selector
+      = render :partial => "shared/tab_selector"
+    #yield-items
+      = render :partial => "shared/yield_items"
+      
+  .panel-footer
+    .row
+      .col.col-xs-5
+        #page-info{:style => "margin-top: 5px"}
+          = render :partial => "shared/page_info_scroll"
+      .col.col-xs-7
+        #paginator
+          //= paginate @reports, remote: true
+          = link_to_next_page @reports, 'Load more reports', params: params, remote: true

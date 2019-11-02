@@ -1,0 +1,563 @@
+%p
+  %ul.nav.nav-tabs{:role => "tablist"}
+    %li.active{:role => "presentation"}
+      %a{"aria-controls" => "yield-ratio", "data-toggle" => "tab", :href => "#yield-ratio", :role => "tab"} Overview Donut
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "fp-yield-ratio", "data-toggle" => "tab", :href => "#fp-yield-ratio", :role => "tab"} Overview Donut (FP)
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "worst-accu", "data-toggle" => "tab", :href => "#worst-accu", :role => "tab"} Worst 5 in Accu Yield
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "worst-daily", "data-toggle" => "tab", :href => "#worst-daily", :role => "tab"} Worst 5 in Daily Yield
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "worst-fp-accu", "data-toggle" => "tab", :href => "#worst-fp-accu", :role => "tab"} Worst 5 in Accu Yield (FP)
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "worst-fp-daily", "data-toggle" => "tab", :href => "#worst-fp-daily", :role => "tab"} Worst 5 in Daily Yield (FP)
+  .tab-content
+    #yield-ratio.tab-pane.fade.in.active{:role => "tabpanel"}
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Accu yield rate distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if params[:commit] != "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #6d6d6d;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worse Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "accu-yield-config-ratio", data: {reports: accu_yield_ratio_chart_data(@reports_for_cart)}
+
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Daily yield rate distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if !params[:commit] == "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #848484;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worse Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "daily-yield-config-ratio", data: {reports: daily_yield_ratio_chart_data(@reports_for_cart)}
+
+    #fp-yield-ratio.tab-pane.fade{:role => "tabpanel"}
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            FP Accu yield rate distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if params[:commit] != "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #6d6d6d;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worse Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "fp-accu-yield-config-ratio", data: {reports: fp_accu_yield_ratio_chart_data(@reports_for_cart)}
+
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            FP Daily yield rate distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if !params[:commit] == "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #848484;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worse Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "fp-daily-yield-config-ratio", data: {reports: fp_daily_yield_ratio_chart_data(@reports_for_cart)}
+
+    #worst-accu.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Top 5 worst configs in Accu Yield
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+            %br (No Input data are not included here)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        - if params[:build] == 'main'
+          = content_tag :div, "", id: "worst-accu-yield-data", data: {reports: worst_config_yield_chart_main_data(@reports_for_cart)}
+        - elsif params[:build] == 'mini'
+          = content_tag :div, "", id: "worst-accu-yield-data", data: {reports: worst_config_yield_chart_mini_data(@reports_for_cart)}
+        - else
+          = content_tag :div, "", id: "worst-accu-yield-data", data: {reports: worst_config_yield_chart_data(@reports_for_cart)}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+    #worst-daily.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Top 5 worst configs in Daily Yield
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+            %br (No Input data are not included here)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        - if params[:build] == 'main'
+          = content_tag :div, "", id: "worst-daily-yield-data", data: {reports: worst_config_yield_chart_main_data(@reports_for_cart)}
+        - elsif params[:build] == 'mini'
+          = content_tag :div, "", id: "worst-daily-yield-data", data: {reports: worst_config_yield_chart_mini_data(@reports_for_cart)}
+        - else
+          = content_tag :div, "", id: "worst-daily-yield-data", data: {reports: worst_config_yield_chart_data(@reports_for_cart)}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+    #worst-fp-accu.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Top 5 worst stations in FP Accu Yield
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+            %br (No Input data are not included here)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        - if params[:build] == 'main'
+          = content_tag :div, "", id: "worst-fp-accu-yield-data", data: {reports: worst_config_yield_chart_main_data(@reports_for_cart)}
+        - elsif params[:build] == 'mini'
+          = content_tag :div, "", id: "worst-fp-accu-yield-data", data: {reports: worst_config_yield_chart_mini_data(@reports_for_cart)}
+        - else
+          = content_tag :div, "", id: "worst-fp-accu-yield-data", data: {reports: worst_config_yield_chart_data(@reports_for_cart)}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+    #worst-fp-daily.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Top 5 worst stations in FP Daily Yield
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+            %br (No Input data are not included here)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        - if params[:build] == 'main'
+          = content_tag :div, "", id: "worst-fp-daily-yield-data", data: {reports: worst_config_yield_chart_main_data(@reports_for_cart)}
+        - elsif params[:build] == 'mini'
+          = content_tag :div, "", id: "worst-fp-daily-yield-data", data: {reports: worst_config_yield_chart_mini_data(@reports_for_cart)}
+        - else
+          = content_tag :div, "", id: "worst-fp-daily-yield-data", data: {reports: worst_config_yield_chart_data(@reports_for_cart)}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+:javascript
+  jQuery(function() {
+    $('ul.nav a').on('shown.bs.tab', function (e) {
+      accu_donut_graph.redraw();
+      daily_donut_graph.redraw();
+      fp_accu_donut_graph.redraw();
+      fp_daily_donut_graph.redraw();
+      accu_graph.redraw();
+      daily_graph.redraw();
+      fp_accu_graph.redraw();
+      fp_daily_graph.redraw();
+      $('svg').css({ width: '100%' });
+    });
+    var accu_donut_graph = Morris.Donut({
+      resize: true,
+      element: 'accu-yield-config-ratio',
+      data: $('#accu-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#1fbba6', '#f8aa33', '#cb4b4b', '#6d6d6d'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    var daily_donut_graph = Morris.Donut({
+      resize: true,
+      element: 'daily-yield-config-ratio',
+      data: $('#daily-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#4da74d', '#ffc652', '#ff7070', '#848484'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    var fp_accu_donut_graph = Morris.Donut({
+      resize: true,
+      element: 'fp-accu-yield-config-ratio',
+      data: $('#fp-accu-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#1fbba6', '#f8aa33', '#cb4b4b', '#6d6d6d'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    var fp_daily_donut_graph = Morris.Donut({
+      resize: true,
+      element: 'fp-daily-yield-config-ratio',
+      data: $('#fp-daily-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#4da74d', '#ffc652', '#ff7070', '#848484'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    var accu_graph = Morris.Bar({
+      element: 'worst-accu-yield-data',
+      smooth: true,
+      continuousLine: true,
+      behaveLikeLine: true,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#1fbba6';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#f8aa33';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#cb4b4b';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      lineWidth: 4,
+      fillOpacity: 0.8,
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#worst-accu-yield-data').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['worst_accu_yield', 'worse_accu_yield', 'bad_accu_yield', 'bad2_accu_yield', 'bad3_accu_yield'],
+      labels: ['worst_accu_config', 'worse_accu_config', 'bad_accu_config', 'bad2_accu_config', 'bad3_accu_config'],
+      "hoverCallback":  function(index, options, content){
+        var row = options.data[index]
+        datetime = '<p><b>' + row.published_at + '</b></p>'
+        var worst_accu_yield = row.worst_accu_yield == null? 'No Input' : row.worst_accu_yield + options.postUnits;
+        var worse_accu_yield = row.worse_accu_yield == null? 'No Input' : row.worse_accu_yield + options.postUnits;
+        var bad_accu_yield = row.bad_accu_yield == null? 'No Input' : row.bad_accu_yield + '%';
+        var bad2_accu_yield = row.bad2_accu_yield == null? 'No Input' : row.bad2_accu_yield + '%';
+        var bad3_accu_yield = row.bad3_accu_yield == null? 'No Input' : row.bad3_accu_yield + '%';
+
+        station1 = '<div style="color: #555;"><strong>Most Worst: </strong>' + row.worst_accu_config + ' (' + worst_accu_yield + ')</div>'
+        station2 = '<div style="color: #555;"><strong>Worst: </strong>' + row.worse_accu_config + ' ('  + worse_accu_yield + ')</div>'
+        station3 = '<div style="color: #555;"><strong>Worse: </strong>' + row.bad_accu_config + ' ('  + bad_accu_yield + ')</div>'
+        station4 = '<div style="color: #555;"><strong>Vary Bad: </strong>' + row.bad2_accu_config + ' ('  + bad2_accu_yield + ')</div>'
+        station5 = '<div style="color: #555;"><strong>Bad: </strong>' + row.bad3_accu_config + ' ('  + bad3_accu_yield + ')</div>'
+        
+        return [datetime, station1, station2, station3, station4, station5]
+      },
+      trendLine: true,
+      postUnits: '%',
+      ymin: 'auto',
+      ymax: 'auto',
+      parseTime: false,
+      barOpacity: 0.7,
+      behaveLikeLine: true
+    });
+    var daily_graph = Morris.Bar({
+      element: 'worst-daily-yield-data',
+      smooth: true,
+      continuousLine: true,
+      behaveLikeLine: true,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#1fbba6';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#f8aa33';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#cb4b4b';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      lineWidth: 4,
+      fillOpacity: 0.8,
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#worst-daily-yield-data').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['worst_daily_yield', 'worse_daily_yield', 'bad_daily_yield', 'bad2_daily_yield', 'bad3_daily_yield'],
+      labels: ['worst_daily_config', 'worse_daily_config', 'bad_daily_config', 'bad2_daily_config', 'bad3_daily_config'],
+      "hoverCallback":  function(index, options, content){
+        var row = options.data[index]
+        datetime = '<p><b>' + row.published_at + '</b></p>'
+        var worst_daily_yield = row.worst_daily_yield == null? 'No Input' : row.worst_daily_yield + options.postUnits;
+        var worse_daily_yield = row.worse_daily_yield == null? 'No Input' : row.worse_daily_yield + options.postUnits;
+        var bad_daily_yield = row.bad_daily_yield == null? 'No Input' : row.bad_daily_yield + '%';
+        var bad2_daily_yield = row.bad2_daily_yield == null? 'No Input' : row.bad2_daily_yield + '%';
+        var bad3_daily_yield = row.bad3_daily_yield == null? 'No Input' : row.bad3_daily_yield + '%';
+
+        station1 = '<div style="color: #555;"><strong>Most Worst: </strong>' + row.worst_daily_config + ' (' + worst_daily_yield + ')</div>'
+        station2 = '<div style="color: #555;"><strong>Worst: </strong>' + row.worse_daily_config + ' ('  + worse_daily_yield + ')</div>'
+        station3 = '<div style="color: #555;"><strong>Worse: </strong>' + row.bad_daily_config + ' ('  + bad_daily_yield + ')</div>'
+        station4 = '<div style="color: #555;"><strong>Vary Bad: </strong>' + row.bad2_daily_config + ' ('  + bad2_daily_yield + ')</div>'
+        station5 = '<div style="color: #555;"><strong>Bad: </strong>' + row.bad3_daily_config + ' ('  + bad3_daily_yield + ')</div>'
+        
+        return [datetime, station1, station2, station3, station4, station5]
+      },
+      trendLine: true,
+      postUnits: '%',
+      ymin: 'auto',
+      ymax: 'auto',
+      parseTime: false,
+      barOpacity: 0.7,
+      behaveLikeLine: true
+    });
+    var fp_accu_graph = Morris.Bar({
+      element: 'worst-fp-accu-yield-data',
+      smooth: true,
+      continuousLine: true,
+      behaveLikeLine: true,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#1fbba6';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#f8aa33';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#cb4b4b';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      lineWidth: 4,
+      fillOpacity: 0.8,
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#worst-fp-accu-yield-data').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['worst_fp_accu_yield', 'worse_fp_accu_yield', 'bad_fp_accu_yield', 'bad2_fp_accu_yield', 'bad3_fp_accu_yield'],
+      labels: ['worst_fp_accu_config', 'worse_fp_accu_config', 'bad_fp_accu_config', 'bad2_fp_accu_config', 'bad3_fp_accu_config'],
+      "hoverCallback":  function(index, options, content){
+        var row = options.data[index]
+        datetime = '<p><b>' + row.published_at + '</b></p>'
+        var worst_fp_accu_yield = row.worst_fp_accu_yield == null? 'No Input' : row.worst_fp_accu_yield + options.postUnits;
+        var worse_fp_accu_yield = row.worse_fp_accu_yield == null? 'No Input' : row.worse_fp_accu_yield + options.postUnits;
+        var bad_fp_accu_yield = row.bad_fp_accu_yield == null? 'No Input' : row.bad_fp_accu_yield + '%';
+        var bad2_fp_accu_yield = row.bad2_fp_accu_yield == null? 'No Input' : row.bad2_fp_accu_yield + '%';
+        var bad3_fp_accu_yield = row.bad3_fp_accu_yield == null? 'No Input' : row.bad3_fp_accu_yield + '%';
+
+        station1 = '<div style="color: #555;"><strong>Most Worst: </strong>' + row.worst_fp_accu_config + ' (' + worst_fp_accu_yield + ')</div>'
+        station2 = '<div style="color: #555;"><strong>Worst: </strong>' + row.worse_fp_accu_config + ' ('  + worse_fp_accu_yield + ')</div>'
+        station3 = '<div style="color: #555;"><strong>Worse: </strong>' + row.bad_fp_accu_config + ' ('  + bad_fp_accu_yield + ')</div>'
+        station4 = '<div style="color: #555;"><strong>Vary Bad: </strong>' + row.bad2_fp_accu_config + ' ('  + bad2_fp_accu_yield + ')</div>'
+        station5 = '<div style="color: #555;"><strong>Bad: </strong>' + row.bad3_fp_accu_config + ' ('  + bad3_fp_accu_yield + ')</div>'
+        
+        return [datetime, station1, station2, station3, station4, station5]
+      },
+      trendLine: true,
+      postUnits: '%',
+      ymin: 'auto',
+      ymax: 'auto',
+      parseTime: false,
+      barOpacity: 0.7,
+      behaveLikeLine: true
+    });
+    var fp_daily_graph = Morris.Bar({
+      element: 'worst-fp-daily-yield-data',
+      smooth: true,
+      continuousLine: true,
+      behaveLikeLine: true,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#1fbba6';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#f8aa33';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#cb4b4b';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      lineWidth: 4,
+      fillOpacity: 0.8,
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#worst-fp-daily-yield-data').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['worst_fp_daily_yield', 'worse_fp_daily_yield', 'bad_fp_daily_yield', 'bad2_fp_daily_yield', 'bad3_fp_daily_yield'],
+      labels: ['worst_fp_daily_config', 'worse_fp_daily_config', 'bad_fp_daily_config', 'bad2_fp_daily_config', 'bad3_fp_daily_config'],
+      "hoverCallback":  function(index, options, content){
+        var row = options.data[index]
+        datetime = '<p><b>' + row.published_at + '</b></p>'
+        var worst_fp_daily_yield = row.worst_fp_daily_yield == null? 'No Input' : row.worst_fp_daily_yield + options.postUnits;
+        var worse_fp_daily_yield = row.worse_fp_daily_yield == null? 'No Input' : row.worse_fp_daily_yield + options.postUnits;
+        var bad_fp_daily_yield = row.bad_fp_daily_yield == null? 'No Input' : row.bad_fp_daily_yield + '%';
+        var bad2_fp_daily_yield = row.bad2_fp_daily_yield == null? 'No Input' : row.bad2_fp_daily_yield + '%';
+        var bad3_fp_daily_yield = row.bad3_fp_daily_yield == null? 'No Input' : row.bad3_fp_daily_yield + '%';
+
+        station1 = '<div style="color: #555;"><strong>Most Worst: </strong>' + row.worst_fp_daily_config + ' (' + worst_fp_daily_yield + ')</div>'
+        station2 = '<div style="color: #555;"><strong>Worst: </strong>' + row.worse_fp_daily_config + ' ('  + worse_fp_daily_yield + ')</div>'
+        station3 = '<div style="color: #555;"><strong>Worse: </strong>' + row.bad_fp_daily_config + ' ('  + bad_fp_daily_yield + ')</div>'
+        station4 = '<div style="color: #555;"><strong>Vary Bad: </strong>' + row.bad2_fp_daily_config + ' ('  + bad2_fp_daily_yield + ')</div>'
+        station5 = '<div style="color: #555;"><strong>Bad: </strong>' + row.bad3_fp_daily_config + ' ('  + bad3_fp_daily_yield + ')</div>'
+        
+        return [datetime, station1, station2, station3, station4, station5]
+      },
+      trendLine: true,
+      postUnits: '%',
+      ymin: 'auto',
+      ymax: 'auto',
+      parseTime: false,
+      barOpacity: 0.7,
+      behaveLikeLine: true
+    });
+  });

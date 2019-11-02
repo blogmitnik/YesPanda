@@ -1,0 +1,15 @@
+//$('#yield-items').html("<%= j(render :partial => 'shared/yield_items') %>");
+$('#paginator').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#paginator-top').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#page-info').html("<%= j(render :partial => 'shared/page_info_scroll') %>");
+$(".pagination").rPage();
+
+// Append new report data
+$("<%=j render(:partial => 'shared/items', :object => @reports) %>").appendTo($(".infinite-table"));
+// Update pagination link
+<% if @reports.last_page? %>
+  $('.pagination').html("That's all, dude!");
+<% else %>
+  //$('#paginator').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+  $('#paginator').html('<%= escape_javascript(link_to_next_page(@reports, 'Load more reports', params: params, :remote => true).to_s) %>');
+<% end %>

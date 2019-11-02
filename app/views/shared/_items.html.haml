@@ -1,0 +1,78 @@
+- build_type = params[:build].nil? ? "" : " (" + params[:build].to_s.upcase + ")"
+
+- @reports.each do |report|
+  %tr
+    %td{:style => "vertical-align: middle;"}
+      = report.model
+    %td{:style => "vertical-align: middle;"}
+      = report.stage
+    %td{:style => "vertical-align: middle;"}
+      = report.seqno
+    %td{:style => "vertical-align: middle;"}
+      - if controller.controller_name == 'stations' || controller.controller_name == 'configs' || params[:from_station] || params[:from_report] || params[:commit] == "GlobalSearch"
+        = report.station_name
+      - elsif params[:commit] == "Search"
+        %a{:href => product_my_post_station_path(@product, @post, report.station, date: params[:date], build: params[:build], date_range: DateTime.parse(report.published_at.to_s).to_date), "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" => "hover", "data-content" => "Click to check yield reports of #{report.station_name} #{build_type}"}
+          = report.station_name
+      - else
+        %a{:href => product_my_post_station_path(@product, @post, report.station, date: params[:date], build: params[:build]), "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" => "hover", "data-content" => "Click to check yield reports of #{report.station_name} #{build_type}"}
+          = report.station_name
+        /= link_to report.station_name, product_my_post_station_path(@product, @post, report.station, date: params[:date])
+    %td{:style => "vertical-align: middle;"}
+      - if report.config == 'ALL'
+        - if get_config_counts(report) > 0
+          %a.progress-load{:href => product_my_post_report_configs_path(@product, @post, report)}
+            %button.btn.btn-sm.btn-primary.ladda-button{"data-style" => "slide-down"}
+              = report.config
+              %span.badge= get_config_counts(report)
+        - else
+          %button.btn.btn-sm.btn-primary{"data-content" => "To check yield by Config, please import Yield Report Sum-Config #{report.post.title} for this datetime.", "title" => "No config file imported", "data-toggle" => "popover", "data-placement" => "bottom", "data-trigger" => "hover", :type => "button"}
+            = report.config
+            %span.badge= get_config_counts(report)
+      - else
+        - if params[:build] == 'main'
+          - if controller.controller_name == 'configs'
+            = report.config
+          - else
+            %a.progress-load{:href => product_my_post_report_configs_path(@product, @post, report, build: params[:build])}
+              %button.btn.btn-sm.btn-primary.ladda-button{"data-style" => "slide-down"}
+                MAIN
+                %span.badge= get_main_mini_config_counts(report)
+        - elsif params[:build] == 'mini'
+          - if controller.controller_name == 'configs'
+            = report.config
+          - else
+            %a.progress-load{:href => product_my_post_report_configs_path(@product, @post, report, build: params[:build])}
+              %button.btn.btn-sm.btn-primary.ladda-button{"data-style" => "slide-down"}
+                MINI
+                %span.badge= get_main_mini_config_counts(report)
+        - else
+          = report.config
+    %td{:style => "vertical-align: middle;"}
+      =render_yield_rate(report.yield_rate)
+    %td{:style => "vertical-align: middle;"}
+      - if report.base_record?
+        %span.label.label-default
+          Start of
+          = report.published_at.to_date.to_formatted_s(:short)
+      - else
+        =render_yield_rate(report.yield_rate_today)
+    %td{:style => "vertical-align: middle;"}
+      =render_yield_rate(report.fp_yield_rate)
+    %td{:style => "vertical-align: middle;"}
+      =render_yield_rate(report.fp_yield_rate_today)
+    %td.date{:style => "vertical-align: middle;"}
+      %span.glyphicon.glyphicon-time
+      = report.published_at.to_formatted_s(:short)
+      %p.small
+        about 
+        = distance_of_time_in_words(Time.now, report.published_at)
+        ago
+    %td{:style => "vertical-align: middle;"}
+      - if controller.controller_name == 'configs'
+        %a{:href => product_my_post_report_path(@product, @post, report)}
+          %button.btn.btn-basecamp.btn-sm.ladda-button{"data-style" => "slide-down"} Detail
+      - else
+        %a{:href => product_my_post_report_path(@product, @post, report, build: params[:build])}
+          %button.btn.btn-basecamp.btn-sm.ladda-button{"data-style" => "slide-down"} Detail
+        /= link_to 'Detail', product_my_post_report_path(@product, @post, report), class: 'btn btn-sm btn-primary'

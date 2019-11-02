@@ -1,0 +1,18 @@
+%ul.nav.nav-pills.nav-wizard{:style => "margin-top: 10px; margin-bottom: 30px;"}
+  - nav.each do |n|
+    - if n.equal? nav.first
+      %li.active
+        %a{:href => n[:url]}
+          = n[:title]
+        .nav-arrow
+    - elsif n.equal? nav.last
+      %li.disabled
+        .nav-wedge
+        %a{:href => "#"}
+          = n[:title]
+    - else
+      %li
+        .nav-wedge
+        %a{:href => n[:url]}
+          = n[:title]
+        .nav-arrow

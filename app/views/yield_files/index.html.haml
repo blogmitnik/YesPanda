@@ -1,0 +1,325 @@
+- navigation_add 'Products', products_path
+- navigation_add 'Builds', product_my_posts_path(@product)
+- navigation_add 'Yield Files', product_my_post_yield_files_path(@product, @post)
+
+%h2.page-header
+  Yield Files Browser
+
+.row
+  .product-lists
+    .col-md-8.col-md-offset-2
+      .panel.panel-custom.panel-default.filterable
+        .panel-heading
+          .row
+            .col.col-xs-6
+              %h3.panel-title
+                = @post.title
+            .col.col-xs-6.text-right
+              %button.btn.btn-default.btn-xs.button-filter{:type => "button"}
+                %span.glyphicon.glyphicon-filter
+                Filter
+
+        .panel-body
+          - if @files.count > 0
+            .pull-right
+              .table
+                .btn-group
+                  %button.btn.btn-success.btn-filter{"data-target" => "Sum-All", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-All files"} Sum-All
+                  %button.btn.btn-warning.btn-filter{"data-target" => "Sum-Config", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-Config files"} Sum-Config
+                  %button.btn.btn-danger.btn-filter{"data-target" => "Sum-Main", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-Main files"} Sum-Main
+                  %button.btn.btn-info.btn-filter{"data-target" => "Sum-Min", :type => "button", "data-toggle" => "tooltip", :title => "Show Sum-Min files"} Sum-Min
+                  %button.btn.btn-default.btn-filter{"data-target" => "all", :type => "button", "data-toggle" => "tooltip", :title => "All files"} Show all
+                .btn-group
+                  %a.dont_show{id: "delete-selected-files", "data-build-name" => "#{@post.title}", "data-build-id" => "#{@post.id}", "data-product-id" => "#{@post.product.id}", :href => "#"}
+                    %button.btn.btn-danger{"data-toggle" => "tooltip", :title => "Delete selected files"}
+                      %span.glyphicon.glyphicon-trash{"aria-hidden" => "true"}
+                      Delete
+                .btn-group
+                  %button.btn.btn-primary{"data-toggle" => "modal", :href => "#importCSV"}
+                    %span.glyphicon.glyphicon-cloud-upload{"aria-hidden" => "true"}
+                    Import File
+
+            .table-container
+              %table.table.table-hover.table-filter.search
+                %thead
+                  %tr.filters{style: "background-color: #fcfcfc;"}
+                    %th{:style => "width: 4.1%; vertical-align: middle;"}
+                      .checkbox.radio-margin
+                        %label
+                          %input{:type => "checkbox", :id => "checkall", :value => ""}
+                          %span.cr
+                            %i.cr-icon.glyphicon.glyphicon-ok
+                    %th{:style => "width: 68%; vertical-align: middle;"}
+                      %input.form-control{:disabled => "disabled", :placeholder => "Yield Report File Name", :type => "text"}
+                    %th{:style => "width: 30%; vertical-align: middle;"}
+                      %input.form-control{:disabled => "disabled", :placeholder => "File imported Date", :type => "text"}
+                %tbody
+                  - @files.each do |file|
+                    // Get substring from file_name
+                    - strip_str = file.file_name.gsub('Yield Report','').strip!
+                    - strip_str = strip_str[0, strip_str.index('20')-1]
+                    %tr{"data-status" => "#{strip_str}", id: "file_row_#{file.id}"}
+                      %td{:style => "width: 4.1%; vertical-align: middle;"}
+                        .ckbox
+                          = check_box_tag "file_ids[]", file.id, false, id: "file_ids_#{file.id}"
+                          %label{:for => "file_ids_#{file.id}"}
+                      %td{:style => "width: 68%; vertical-align: middle;"}
+                        .media
+                          - if strip_str.eql? 'Sum-All'
+                            - color = 'success'
+                          -elsif strip_str.eql? 'Sum-Config'
+                            - color = 'warning'
+                          -elsif strip_str.eql? 'Sum-Main'
+                            - color = 'danger'
+                          -elsif strip_str.eql? 'Sum-Mini'
+                            - color = 'info'
+                          %span.label.pull-right{:style => "vertical-align: middle;", :class => "label-#{color}"}
+                            = strip_str
+                          .media-body
+                            %h4.title
+                              = link_to file.file_name, product_my_post_yield_file_path(@product, @post, file)
+                            %p.summary
+                              = file.total_row.to_i
+                              rows of records included
+                      %td{:style => "width: 30%;"}
+                        %span.media-meta= file.created_at.to_date.to_formatted_s(:long)
+                        %span#delete-file.pull-right.dont_show
+                          /= link_to '(Delete)', '#', :class => "text-danger", id: "delete-yield-file", "data-file-id" => "#{file.id}", "data-build-id" => "#{file.post.id}", "data-product-id" => "#{file.post.product.id}"
+                          %a#delete-yield-file{"data-build-id" => "#{file.post.id}", "data-file-id" => "#{file.id}", "data-product-id" => "#{file.post.product.id}", :href => "#"}
+                            %button.btn.btn-xs.btn-danger.glyphicon.glyphicon-trash.row-remove{"data-toggle" => "tooltip", :title => "Delete"}
+          - else
+            %strong.text-danger No file found
+
+= render :partial => "shared/csv_importer"
+
+:javascript
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    var href = $('#delete-all-files').attr('href')
+    $('#delete-all-files').on('click',function(){
+      var newHref = href + '?'
+      $(".search input[type=checkbox]").each(function () {
+        if ($(this).prop('checked') == true) newHref+='file_ids%5B%5D='+$(this).val()+'&'
+      });
+      $('#delete-all-files').attr('href',newHref)
+    });
+
+    $('.star').on('click', function () {
+      $(this).toggleClass('star-checked');
+    });
+
+    $(".search #checkall").click(function () {
+      if ($(".search #checkall").is(':checked')) {
+        $(".search input[type=checkbox]").each(function () {
+          $(this).prop("checked", true);
+        });
+        $(".search tbody tr").each(function () {
+          $(this).find('td').find('#delete-file').removeClass('dont_show');
+          $(this).addClass('selected');
+        });
+        $("#delete-selected-files").removeClass('dont_show');
+      } else {
+        $(".search input[type=checkbox]").each(function () {
+          $(this).prop("checked", false);
+        });
+        $(".search tbody tr").each(function () {
+          $(this).find('td').find('#delete-file').toggleClass('dont_show');
+          $(this).removeClass('selected');
+        });
+        $("#delete-selected-files").addClass('dont_show');
+      }
+    });
+
+    $('.ckbox label').on('click', function () {
+      $(this).parents('tr').toggleClass('selected');
+      var checked = $(this).parents('td').find("input:checkbox").is(":checked");   
+      if(checked){
+        $(this).parents('tr').find('#delete-file').addClass('dont_show');
+        var check = $(".search tbody tr").find('input[type=checkbox]:checked').length;
+        if (check == 1) $("#delete-selected-files").addClass('dont_show');
+      }
+      else {
+        $(this).parents('tr').find('#delete-file').removeClass('dont_show');
+        $(".filters .checkbox input[type=checkbox]").prop("checked", false);
+        $("#delete-selected-files").removeClass('dont_show'); 
+      }
+    });
+
+    $('.btn-filter').on('click', function () {
+      var $target = $(this).data('target');
+      if ($target != 'all') {
+        $('.table tr').css('display', 'none');
+        $('.table tr[data-status="' + $target + '"]').fadeIn('slow');
+      } else {
+        $('.table tr').css('display', 'none').fadeIn('slow');
+      }
+    });
+
+    $('.filterable .button-filter').click(function(){
+        var $panel = $(this).parents('.filterable'),
+        $filters = $panel.find('.filters input'),
+        $tbody = $panel.find('.search tbody');
+        if ($filters.prop('disabled') == true) {
+            $filters.prop('disabled', false);
+            $filters.first().focus();
+        } else {
+            $filters.val('').prop('disabled', true);
+            $tbody.find('.no-result').remove();
+            $tbody.find('tr').show();
+        }
+    });
+
+    $('.filterable .filters input').keyup(function(e){
+        /* Ignore tab key */
+        var code = e.keyCode || e.which;
+        if (code == '9') return;
+        /* Useful DOM data and selectors */
+        var $input = $(this),
+        inputContent = $input.val().toLowerCase(),
+        $panel = $input.parents('.filterable'),
+        column = $panel.find('.filters th').index($input.parents('th')),
+        $table = $panel.find('.search'),
+        $rows = $table.find('tbody tr');
+        /* Dirtiest filter function ever ;) */
+        var $filteredRows = $rows.filter(function(){
+            var value = $(this).find('td').eq(column).text().toLowerCase();
+            return value.indexOf(inputContent) === -1;
+        });
+        /* Clean previous no-result if exist */
+        $table.find('tbody .no-result').remove();
+        /* Show all rows, hide filtered ones (never do that outside of a demo ! xD) */
+        $rows.show();
+        $filteredRows.hide();
+        /* Prepend no-result row if all rows are filtered */
+        if ($filteredRows.length === $rows.length) {
+            $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filters th').length +'">No result found</td></tr>'));
+        }
+    });
+  });
+
+  $("a#delete-yield-file").click(function() {
+    var fileId = $(this).attr("data-file-id");
+    var buildId = $(this).attr("data-build-id");
+    var productId = $(this).attr("data-product-id");
+    deleteFile(fileId, buildId, productId);
+  });
+
+  function deleteFile(fileId, buildId, productId) {
+    swal({
+      title: "Are you sure?", 
+      text: "You want to delete this file?", 
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonClass: "btn-danger",
+      confirmButtonText: "Delete it!",
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true
+    }, function() {
+      $.ajax({
+        url: "/products/" + productId + "/my_posts/" + buildId + "/yield_files/" + fileId,
+        type: "DELETE",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        swal("File Deleted!", "Your file was successfully deleted!", "success");
+        $("#file_row_" + fileId).fadeOut();
+
+        $('button.confirm').click(function() {
+          setTimeout(function(){
+            $(location).attr('href', "/products/" + productId + "/my_posts/" + buildId + "/yield_files")
+          }, 200);
+        });
+      })
+      .error(function(data) {
+        swal("Something went wrong", "We couldn't connect to the server!", "error");
+      });
+    });
+  }
+
+  $("a#delete-selected-files").click(function() {
+    var buildName = $(this).attr("data-build-name");
+    var buildId = $(this).attr("data-build-id");
+    var productId = $(this).attr("data-product-id");
+    var allCheckBoxNum = $(".search tbody tr").find('input[type=checkbox]').length;
+    var newHref = '?'
+    var selFilesCount = 0
+    $(".search input[type=checkbox]").each(function () {
+      if ($(this).prop('checked') == true) {
+        selFilesCount ++
+        newHref+='file_ids%5B%5D='+$(this).val()+'&'
+      }
+    });
+    if (selFilesCount >= allCheckBoxNum) {
+      deleteBuild(buildName, buildId, productId);
+    } else {
+      deleteSelectedFiles(buildName, buildId, productId, newHref, selFilesCount);
+    }
+  });
+
+  function deleteSelectedFiles(buildName, buildId, productId, newHref, selFilesCount) {
+    swal({
+      title: "Are you sure?", 
+      text: "You want to delete the selected files", 
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonClass: "btn-warning",
+      confirmButtonText: "Delete",
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true
+    }, function() {
+      $.ajax({
+        url: "/products/" + productId + "/my_posts/" + buildId + "/yield_files/destroy_multiple" + newHref,
+        type: "DELETE",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        swal("Successfully Deleted!", selFilesCount + " files was successfully deleted!", "success");
+        $("#build_row_" + buildId).fadeOut();
+
+        $('button.confirm').click(function() {
+          setTimeout(function(){
+            $(location).attr('href', "/products/" + productId + "/my_posts/" + buildId + "/yield_files/")
+          }, 200);
+        });
+      })
+      .error(function(data) {
+        swal("Something went wrong", "We couldn't connect to the server!", "error");
+      });
+    });
+  }
+
+  function deleteBuild(buildName, buildId, productId) {
+    swal({
+      title: "Are you sure?", 
+      text: "You want to delete " + buildName, 
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonClass: "btn-warning",
+      confirmButtonText: "Delete it!",
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true
+    }, function() {
+      $.ajax({
+        url: "/products/" + productId + "/my_posts/" + buildId,
+        type: "DELETE",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        swal("Successfully Deleted!", buildName + " was successfully deleted!", "success");
+        $("#build_row_" + buildId).fadeOut();
+
+        $('button.confirm').click(function() {
+          setTimeout(function(){
+            $(location).attr('href', "/products/" + productId + "/my_posts")
+          }, 200);
+        });
+      })
+      .error(function(data) {
+        swal("Something went wrong", "We couldn't connect to the server!", "error");
+      });
+    });
+  }

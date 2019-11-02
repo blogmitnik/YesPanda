@@ -1,0 +1,26 @@
+.row
+  .container
+    = form_for(@post, :url => (@post.id ? product_my_post_path(@product, @post) : product_my_posts_path(@product)), :html => { :class => "well", :role => "form" }) do |f|
+      - if @post.errors.any?
+        #error_explanation
+          %h2
+            = pluralize(@post.errors.count, "error")
+            prohibited this post from being saved:
+          %ul
+            - @post.errors.full_messages.each do |msg|
+              %li= msg
+      .form-group
+        = f.label :title
+        = f.text_field :title, :style => "width: 99%;", class: "form-control", placeholder: "Build & Stage"
+      .form-group
+        = f.label :content
+        = f.text_area :content, :style => "width: 99%;", class: "form-control", placeholder: "Description for this build & stage"
+      .checkbox
+        %label.checkbox{ :for => "post_publish" }
+          - @post.publish = @post.published if @post.publish.nil?
+          - @post.publish = true unless @post.created_at
+          = f.check_box :publish
+          Publish
+      
+      %button{ :type => "submit", :class => "btn btn-primary" } Save it
+      = link_to 'Cancel', product_my_posts_path, class: "btn btn-default"

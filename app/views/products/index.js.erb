@@ -1,0 +1,2 @@
+$('#product-items').html("<%= j(render :partial => 'product_items') %>");
+$('#paginator').html('<%= escape_javascript(paginate(@products, :remote => true).to_s) %>');

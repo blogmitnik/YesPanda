@@ -1,0 +1,8 @@
+- if @builds.nil? || (params[:product_id] == "" && @builds.count == 0)
+  %button.btn.btn-primary.btn-block.tclick.searchButton{:type => "submit", :disabled => true}
+    %span.glyphicon.glyphicon-search{"aria-hidden" => "true"}
+    Search
+- else
+  %button.btn.btn-primary.btn-block.tclick.searchButton{:type => "submit"}
+    %span.glyphicon.glyphicon-search{"aria-hidden" => "true"}
+    Search

@@ -1,0 +1,17 @@
+- navigation_add 'Sign in', new_session_path(resource)
+
+.container
+  = form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => { :class => "form-signin" }) do |f|
+    %h2.form-signin-heading Sign in to YesPanda
+    = f.label :email, "Email address", class: "sr-only"
+    = f.email_field :email, class: "form-control required", id: "formGroupInputLarge email-field", placeholder: "Email address", autofocus: "autofocus"
+    = f.label :password, "Password", class: "sr-only"
+    = f.password_field :password, class: "form-control required", id: "formGroupInputLarge pwd-field", placeholder: "Password"
+    - if devise_mapping.rememberable?
+      .checkbox
+        %label{:for => "user_remember_me"}
+          = f.check_box :remember_me
+          Remember me
+    %button.btn.btn-lg.btn-success.btn-block{:type => "submit"} Sign in
+    %br
+    = render "links"

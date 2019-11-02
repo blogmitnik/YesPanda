@@ -1,0 +1,81 @@
+/ Date Range Selector
+- if (params[:commit] == 'GlobalSearch' || params[:commit] == 'Search') && !params[:date_range].nil?
+  #hidden-search-data{"data-product-id" => params[:product_id], "data-my-post-id" => params[:my_post_id], "data-station" => params[:station], "data-config" => params[:config], "data-commit" => params[:commit], "data-from-station" => params[:from_station]}
+  #date-range-slider
+
+:javascript
+  $(document).ready(function() {
+  	$(document).ajaxStart(function(){
+  	  $(".sk-three-bounce").show();
+  	  $("#search-box").fadeTo("fast", 0.3);
+      $("#date-selector").fadeTo("fast", 0.3);
+      $(".record_lists").fadeTo("fast", 0.3);
+      $(".chart_section").fadeTo("fast", 0.3);
+      $("#date-slider-box").fadeTo("fast", 0.3);
+    });
+    $(document).ajaxStop(function(){
+      $(".sk-three-bounce").hide();
+      $("#search-box").fadeTo("fast", 1.0);
+      $("#date-selector").fadeTo("fast", 1.0);
+      $(".record_lists").fadeTo("fast", 1.0);
+      $(".chart_section").fadeTo("fast", 1.0);
+      $("#date-slider-box").fadeTo("fast", 1.0);
+    });
+
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    var dateRange = $('#hidden-date-range');
+    var start_year = dateRange.data('year-from');
+    var start_month = dateRange.data('month-from');
+    var start_day = dateRange.data('day-from');
+    var end_year = dateRange.data('year-to');
+    var end_month = dateRange.data('month-to');
+    var end_day = dateRange.data('day-to');
+
+    var searchData = $('#hidden-search-data');
+    var product_id = searchData.data('product-id'),
+        my_post_id = searchData.data('my-post-id'),
+        station = searchData.data('station'),
+        config = searchData.data('config'),
+        commit = searchData.data('commit'),
+        from_station = searchData.data('from-station');
+
+    $("#date-range-slider").dateRangeSlider({
+      defaultValues: {min: new Date(start_year, start_month, start_day), max: new Date(end_year, end_month, end_day)},
+      bounds: {min: new Date(start_year, start_month, 1), max: new Date(end_year, end_month, 31)},
+      range: {min: {days: 1}, max: {days: 7}},
+      step: {days: 1}
+    });
+
+    $("#date-range-slider").bind("valuesChanged", function(e, data){
+      var s_day = data.values.min.getDate(),
+          s_month = data.values.min.getMonth() + 1,
+          s_year = data.values.min.getFullYear();
+      if (s_month < 10) s_month = '0' + s_month;
+      var start_date = s_year + "-" + s_month + "-" + s_day;
+
+      var e_day = data.values.max.getDate(),
+          e_month = data.values.max.getMonth() + 1,
+          e_year = data.values.max.getFullYear();
+      if (e_month < 10) e_month = '0' + e_month;
+      var end_date = e_year + "-" + e_month + "-" + e_day;
+
+      var date_range = start_date + " - " + end_date
+
+      console.log("Values just changed. min: " + data.values.min + " max: " + data.values.max + " start date: " + start_date + " end date: " + end_date + " date range: " + date_range);
+
+      return $.ajax({
+      	url: '/search_report',
+        type: 'GET',
+       data: {
+         date_range: date_range,
+         product_id: product_id,
+         my_post_id: my_post_id,
+         station: station,
+         config: config,
+         commit: commit,
+         from_station: from_station
+       },
+       dataType: 'script'
+      });
+    });
+  });

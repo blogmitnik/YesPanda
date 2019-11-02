@@ -1,0 +1,16 @@
+.row
+  .container
+    = form_for(@product, :url => products_path, :html => { :class => "well", :role => "form" }) do |f|
+      - if @product.errors.any?
+        #error_explanation
+          %h2
+            = pluralize(@product.errors.count, "error")
+            prohibited this post from being saved:
+          %ul
+            - @product.errors.full_messages.each do |msg|
+              %li= msg
+      .form-group
+        = f.label :title
+        = f.text_field :title, :style => "width: 99%;", class: "form-control", placeholder: "Product name"
+      
+      %button{ :type => "submit", :class => "btn btn-primary" } Create Product

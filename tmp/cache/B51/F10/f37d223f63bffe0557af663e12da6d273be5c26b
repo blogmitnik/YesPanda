@@ -1,0 +1,11 @@
+o: ActiveSupport::Cache::Entry	:@compressedF:@expires_in0:@created_atf1512466673.598189:@value"É[I"¼(function() {
+  jQuery(function() {
+    if ($('#infinite-table').size() > 0) {
+      $(window).on('scroll', function() {
+        return alert('xxx');
+      });
+    }
+  });
+
+}).call(this);
+:ET

@@ -1,0 +1,61 @@
+ui-widget {
+	font-family: "DroidSans", sans-serif;
+	background: #f8f8f8;
+}
+
+ui-datepicker {
+	padding: 0;
+}
+
+.ui-datepicker-header {
+	padding: .3em 0;
+	color: #fff;
+	font-family: "DroidSans", sans-serif;
+	font-size: 13px;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.8);
+	border: none;
+	border-radius: 0;
+	-moz-border-radius: 2px 2px 0 0;
+	-webkit-border-radius: 2px 2px 0 0;
+	border-radius: 2px 2px 0 0;
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	background-color: #b73c37;
+	-moz-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,.2);
+	box-shadow: 0 1px 1px rgba(0,0,0,.2);
+	background-image: -moz-linear-gradient(bottom, rgba(0,0,0,.25) 0%, rgba(255,255,255,.25) 100%);
+	background-image: -o-linear-gradient(bottom, rgba(0,0,0,.25) 0%, rgba(255,255,255,.25) 100%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.25) 0%, rgba(255,255,255,.25) 100%);
+	background-image: linear-gradient(bottom, rgba(0,0,0,.25) 0%, rgba(255,255,255,.25) 100%);
+}
+
+.ui-datepicker-header .ui-state-hover {
+	background: transparent;
+	border-color: transparent;
+	cursor: pointer;
+	border-radius: 0;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+
+.ui-datepicker .ui-datepicker-next span,
+.ui-datepicker .ui-datepicker-prev span {
+	background-image: url(asset-path('ui-icons_ffffff_256x240.png', image));
+	background-position: -32px -16px;
+}
+
+.ui-datepicker .ui-datepicker-prev span {
+	background-position: -96px -16px;
+}
+
+.ui-datepicker table {
+	margin: 0;
+}
+
+td .ui-state-active,
+td .ui-state-hover {
+	font-weight: bold;
+}
+

@@ -1,0 +1,93 @@
+%p
+  %ul.nav.nav-tabs{:role => "tablist"}
+    %li.active{:role => "presentation"}
+      %a{"aria-controls" => "yield-ratio", "data-toggle" => "tab", :href => "#yield-ratio", :role => "tab"} Distribution Donut
+  .tab-content
+    #yield-ratio.tab-pane.fade.in.active{:role => "tabpanel"}
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Accu yield rate level distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if params[:commit] != "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #6d6d6d;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worst Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "accu-yield-config-ratio", data: {reports: accu_yield_ratio_chart_data(@reports_for_cart)}
+
+      .col-sm-6
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Daily yield rate level distribution from
+            = @reports.count * @reports.total_pages
+            configs of
+            = @station.name
+            - if !params[:commit] == "GlobalSearch"
+              at
+              = @report.published_at.to_formatted_s(:short)
+            - else
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #848484;"}
+            %span.badge-category No Input
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worst Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "daily-yield-config-ratio", data: {reports: daily_yield_ratio_chart_data(@reports_for_cart)}
+
+:javascript
+  jQuery(function() {
+    Morris.Donut({
+      resize: true,
+      element: 'accu-yield-config-ratio',
+      data: $('#accu-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#1fbba6', '#f8aa33', '#cb4b4b', '#6d6d6d'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    Morris.Donut({
+      resize: true,
+      element: 'daily-yield-config-ratio',
+      data: $('#daily-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#4da74d', '#ffc652', '#ff7070', '#848484'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+  });

@@ -1,0 +1,19 @@
+//$('#yield-items').html("<%= j(render :partial => 'shared/yield_items') %>");
+$('#paginator').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#paginator-top').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#page-info').html("<%= j(render :partial => 'shared/page_info_scroll') %>");
+//$('#date-selector').html("<%= j(render :partial => 'shared/date_selector') %>");
+$('#date-range').html("<%= j(render :partial => 'shared/date_range') %>");
+$('#worst-yield-cart').html("<%= j(render :partial => 'worst_yield_cart') %>");
+$("#paginator .pagination").rPage();
+$('.dropdown-toggle').dropdown();
+
+// Append new report data
+$("<%=j render(:partial => 'shared/items', :object => @reports) %>").appendTo($(".infinite-table"));
+// Update pagination link
+<% if @reports.last_page? %>
+  $('.pagination').html("That's all, dude!");
+<% else %>
+  //$('#paginator').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+  $('#paginator').html('<%= escape_javascript(link_to_next_page(@reports, 'Load more report', params: params, :remote => true).to_s) %>');
+<% end %>

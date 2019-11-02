@@ -1,0 +1,13 @@
+- if @builds.nil? || (params[:product_id] == "" && @builds.count == 0)
+  = text_field_tag :station, '', id: 'searchStation', class: 'form-control', placeholder: 'Station Name', readonly: true
+- else
+  = autocomplete_field_tag :station, '', autocomplete_station_reports_path, id: 'searchStation', class: 'form-control', placeholder: 'Station Name', :append_to => "#station-list-suggested"
+  #station-list-suggested
+
+:javascript
+  $(document).ready(function(){
+    $('#search-config').prop('disabled',true);
+    $('#searchStation').keyup(function(){
+      $('#search-config').prop('disabled', this.value == "" ? true : false);     
+    })
+  });

@@ -1,0 +1,184 @@
+!!! 5
+%html
+  %head
+    %meta{ :charset => "utf-8" }
+    %title YesPanda
+    = stylesheet_link_tag "application", :media => "all", "data-turbolinks-track" => true
+    /%link{:href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", :rel => "stylesheet"}
+    /%script{:src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", :type => "text/javascript"}
+    /= javascript_include_tag "bootstrap", "data-turbolinks-track" => true
+    
+    %link{:href => "/assets/bootstrap.css", :rel => "stylesheet"}
+    %script{:src => "/assets/bootstrap.js", :type => "text/javascript"}
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = csrf_meta_tags
+    %meta{ :name => "viewport", :content => "width=device-width, initial-scale=1.0" }
+  %body
+    %nav.navbar.navbar-custom.navbar-findcond.navbar-fixed-top{:role => "navigation"}
+      .container
+        .navbar-inner
+          - if user_signed_in?
+            %button.navbar-toggle{ :type => "button", "data-toggle" => "collapse", "data-target" => ".navbar-collapse" }
+              %span.sr-only Toggle navigation
+              %span.icon-bar
+              %span.icon-bar
+              %span.icon-bar
+          %a.navbar-brand{:href => "/"}
+            .text-logo YesPanda
+            /%span.label.label-success.text-capitalize Alpha
+
+          .collapse.navbar-collapse
+            %ul.nav.navbar-nav.navbar-right
+              - if user_signed_in?
+                %li
+                  %a{:href => "/users/edit"}
+                    %span.glyphicon.glyphicon-user
+                    ='@' + current_user.email.sub(/@.*\Z/, '')
+                %li
+                  %a{:href => "/users/sign_out", "data-method" => "delete"}
+                    %span.glyphicon.glyphicon-log-out
+                    Sign out
+              - else
+                %li
+                  %a{:href => "/users/sign_in"}
+                    %span.glyphicon.glyphicon-log-in
+                    Sign in
+                %li
+                  %a{:href => "/users/sign_up"}
+                    %span.glyphicon.glyphicon-edit
+                    Sign up
+
+            - if user_signed_in?
+              %ul.nav.navbar-nav.navbar
+                %li
+                  %a{:href => "/products"}
+                    %span.glyphicon.glyphicon-th-list
+                    Report
+                %li
+                  %a{:href => "/oauth/authorized_applications"}
+                    %span.glyphicon.glyphicon-lock
+                    Apps
+                %li
+                  %a{:href => "#"}
+                    %span.badge 99+
+                    %span.glyphicon.glyphicon-bell
+                    Notif
+              
+              /%form{:action=>"/reports/search", :method => :get, "accept-charset" => "UTF-8", :id=>"search-reports"}
+              = form_tag "/reports/search", method: :get, id: "search-reports", class: 'row' do
+                %ul.nav.navbar-nav.navbar-left.dropdown.dropdown-lg
+                  %li
+                    %a.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown"}
+                      %span.glyphicon.glyphicon-search
+                      Search
+                      %span.caret
+                    .dropdown-menu.dropdown-menu-right{:role => "menu"}
+                      .form-horizontal{:role => "form"}
+                        .form-group
+                          %label{:for => "filter"} Product
+                          #product-to-select
+                            - @products = Product.all
+                            = select_tag 'product_id', options_for_select(@products.collect{ |p| [p.title, p.id] }), class: 'form-control', id: 'selected-product', prompt: "Select a product", style: "width: 100%"
+                            = hidden_field_tag :commit, "GlobalSearch"
+                        .form-group
+                          %label{:for => "contain"} Build
+                          #build-to-select
+                            = render partial: 'shared/builds_selector'
+                        .form-group
+                          %label{:for => "contain"} Station
+                          #station-to-select
+                            = render partial: 'shared/stations_selector'
+                        .form-group
+                          %label{:for => "contain"} Config
+                          #config-to-select
+                            = render partial: 'shared/configs_selector'
+                            #config-list-suggested
+                        .form-group
+                          %label{:for => "contain"} Date Ragne
+                          #daterange-to-select
+                            .inner-addon.left-addon
+                              %i.glyphicon.glyphicon-calendar
+                              = text_field_tag :date_range, params[:date_range], id: 'search-date-range', class: 'daterange form-control', autocomplete: 'off'
+                        .form-group
+                          #search-button
+                            = render partial: 'shared/search_button'
+    .container
+      .media
+        - flash.each do |key, message|
+          .media-body
+          - if flash[:notice]
+            .alert.alert-success{ :class => key, :role => "alert" }
+              %span.glyphicon.glyphicon-ok-sign{"aria-hidden" => "true"}
+              %a.close{ :href => "#", "data-dismiss" => "alert" } &times;
+              = message
+          - elsif flash[:alert]
+            .alert.alert-danger{ :class => key, :role => "alert" }
+              %span.glyphicon.glyphicon-exclamation-sign{"aria-hidden" => "true"}
+              %a.close{ :href => "#", "data-dismiss" => "alert" } &times;
+              = message
+      /Indicate the current page's location within a navigational hierarchy
+      - unless current_page?("/oauth/authorized_applications")
+        = render_navigation
+      = yield
+      =render 'shared/footer'
+
+      %a#back-to-top.back-to-top{:href => "#"}
+        =image_tag "page-top-icon.png"
+
+:javascript
+  $('#back-to-top').hide();
+
+  $('.dropdown-toggle').dropdown();
+
+  $('.dropdown-menu').click(function(e) {
+    e.stopPropagation();
+  });
+
+  $('#selected-product').select2({
+    placeholder: "Select a product"
+  });
+
+  $(document).on('click', '.ranges ul li, span.month, th.next, th.prev, th.switch, span.year', function (e) {
+    e.stopPropagation();
+  });
+
+  $(function() {
+    var start = moment().subtract(0, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('input[class="daterange"]').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('input[id="search-date-range"]').daterangepicker({
+        startDate: start,
+        endDate: end,
+        autoApply: true,
+        opens: "right",
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 3 Days': [moment().subtract(2, 'days'), moment()],
+           'Last 5 Days': [moment().subtract(4, 'days'), moment()],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()]
+        },
+        locale: {
+          format: "YYYY-MM-DD",
+          separator: " - "
+        }
+    }, cb);
+
+    cb(start, end);
+  });
+
+  $('#product-to-select').change(function(event, data, status, xhr) {
+    var e = document.getElementById("selected-product");
+    var pv = e.options[e.selectedIndex].value;
+    event.preventDefault();
+    return $.ajax({
+      url: '/update_builds_selector',
+      type: 'GET',
+      data: { product_id: pv },
+      dataType: 'script'
+    });
+  });

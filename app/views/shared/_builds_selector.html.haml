@@ -1,0 +1,9 @@
+- if @builds.nil?
+  = select_tag "my_post_id", nil, class: 'form-control', id: 'selected-build', prompt: '', disabled: true, style: "width: 100%"
+- else
+  = select_tag "my_post_id", options_for_select(@builds.collect{ |b| [b.title, b.id] }), class: 'form-control', id: 'selected-build', style: "width: 100%"
+
+:javascript
+  $('#selected-build').select2({
+    placeholder: ""
+  });

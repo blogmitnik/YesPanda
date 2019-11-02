@@ -1,0 +1,61 @@
+.entry-meta.row
+  %aside.meta-details
+    #date-range
+      = render :partial => "shared/date_range"
+    #search
+      = form_tag search_product_my_post_reports_path(@product, @post), method: :get, id: "search-reports", class: 'row' do
+        .col-sm-12.col-md-3.inner-addon.left-addon
+          %i.glyphicon.glyphicon-tags
+          - if params[:station].present? && params[:station] != ""
+            / For Station page
+            = autocomplete_field_tag :station, '', autocomplete_station_name_product_my_post_reports_path(@product, @post), class: 'form-control input-lg uneditable-input', id: 'station-field', placeholder: 'Station Name', value: "#{params[:station].to_s}"
+          - else
+            / For Post page
+            = autocomplete_field_tag :station, '', autocomplete_station_name_product_my_post_reports_path(@product, @post), class: 'form-control input-lg', id: 'station-field', placeholder: 'Station Name'
+        .col-xs-6.col-sm-3.col-md-3.inner-addon.left-addon
+          %i.glyphicon.glyphicon-cog
+          - if params[:config].present? && params[:config] != ""
+            = autocomplete_field_tag :config, '', autocomplete_report_config_product_my_post_reports_path(@product, @post), class: 'form-control input-lg', id: 'config-field', placeholder: 'Config Name', value: "#{params[:config].to_s}"
+          - else
+            = autocomplete_field_tag :config, '', autocomplete_report_config_product_my_post_reports_path(@product, @post), class: 'form-control input-lg', id: 'config-field', placeholder: 'Config Name'
+        .col-xs-6.col-sm-3.col-md-4.inner-addon.left-addon
+          %i.glyphicon.glyphicon-calendar
+          - if params[:date_range].present? && params[:date_range] != ""
+            = text_field_tag :date_range, params[:date_range], id: 'search-date-range', class: 'daterange form-control input-lg', value: "#{params[:date_range].to_s}", autocomplete: 'off'
+          - else
+            = text_field_tag :date_range, params[:date_range], id: 'search-date-range', class: 'daterange form-control input-lg', autocomplete: 'off'
+        .col-xs-12.col-sm-3.col-md-2
+          = hidden_field_tag :commit, "GlobalSearch"
+          %button#search-button.btn.btn-success.btn-lg.btn-block.tclick{:type => "submit", data: { disable_with: "Searching..." }}
+            %span.glyphicon.glyphicon-search
+            Search
+
+:javascript
+  $(function() {
+    var start = moment().subtract(0, 'days');
+    var end = moment();
+
+    function cb(start, end) {
+        $('input[class="daterange"]').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    }
+
+    $('input[id="search-date-range"]').daterangepicker({
+        startDate: start,
+        endDate: end,
+        autoApply: true,
+        opens: "center",
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 3 Days': [moment().subtract(2, 'days'), moment()],
+           'Last 5 Days': [moment().subtract(4, 'days'), moment()],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()]
+        },
+        locale: {
+          format: "YYYY-MM-DD",
+          separator: " - "
+        }
+    }, cb);
+
+    cb(start, end);
+  });

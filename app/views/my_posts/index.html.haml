@@ -1,0 +1,123 @@
+- navigation_add 'Products', products_path
+- navigation_add 'Builds', product_my_posts_path(@product)
+
+%h2.page-header
+  = @product.title
+  %small
+    All builds for this product
+%p.lead Click one of the build to check yield report records
+
+.row
+  .build-lists
+    .col-md-8.col-md-offset-2
+      .panel.panel-custom.panel-default
+        .panel-body
+          .pull-right
+            .table
+              .btn-group
+                %button.btn.btn-primary{"data-toggle" => "modal", href: "#importCSV"}
+                  %span.glyphicon.glyphicon-cloud-upload{"aria-hidden" => "true"}
+                  Import File
+
+          .table-container
+            %table.table.table-hover.table-filter
+              %tbody
+                - if @posts.count > 0
+                  - @posts.each do |post|
+                    %tr{id: "build_row_#{post.id}"}
+                      %td{style: "vertical-align: middle;"}
+                        .ckbox
+                          = check_box_tag "post_ids[]", post.id, false, id: "post_ids_#{post.id}"
+                          %label{for: "post_ids_#{post.id}"}
+                      %td{style: "vertical-align: middle;"}
+                        %a.star{href: "javascript:;", "data-toggle" => "tooltip", title: "No function yet"}
+                          %i.glyphicon.glyphicon-star
+                      %td
+                        .media
+                          .media-body
+                            %span.media-meta.pull-right= post.created_at.to_date.to_formatted_s(:long)
+                            %h4.title
+                              = link_to post.title, product_my_post_path(@product, post)
+                              - if post.report_mains.count > 0
+                                = link_to " (MAIN) ", product_my_post_path(@product, post, build: 'main')
+                              - if post.report_minis.count > 0
+                                = link_to " (MINI) ", product_my_post_path(@product, post, build: 'mini')
+                              %span#delete-build.pull-right.dont_show
+                                /= link_to '(Delete)', product_my_post_path(@product, post), data: { confirm: "All imported yield files and records from #{post.title} will be permanently deleted. Are you sure?" }, method: :delete, :class => "text-danger"
+                                = link_to '(Delete)', '#', class: "text-danger", id: "delete-a-build", "data-build-name" => "#{post.title}", "data-build-id" => "#{post.id}", "data-product-id" => "#{post.product.id}"
+                              %span#manage-files.pull-right.dont_show
+                                = link_to '(Manage Files)', product_my_post_yield_files_path(@product, post)
+                            %p.summary
+                              - if post.reports.count > 0
+                                = post.reports.count.to_i
+                                yield record(s) included
+                              - else
+                                No yield record included
+                - else
+                  %tr
+                    %td
+                      No any build included
+
+= render :partial => "shared/csv_importer"
+
+:javascript
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
+    $('.star').on('click', function () {
+      $(this).toggleClass('star-checked');
+    });
+
+    $('.ckbox label').on('click', function () {
+      $(this).parents('tr').toggleClass('selected');
+      var checked = $(this).find("input:checkbox").is(":checked");
+      if(checked){
+        $(this).parents('tr').find('#delete-build').removeClass('dont_show');
+        $(this).parents('tr').find('#manage-files').removeClass('dont_show');
+      }
+      else {
+        $(this).parents('tr').find('#delete-build').toggleClass('dont_show');
+        $(this).parents('tr').find('#manage-files').toggleClass('dont_show');
+      }
+    });
+  });
+
+  $("a#delete-a-build").click(function() {
+    var buildName = $(this).attr("data-build-name");
+    var buildId = $(this).attr("data-build-id");
+    var productId = $(this).attr("data-product-id");
+    deleteBuild(buildName, buildId, productId);
+  });
+
+  function deleteBuild(buildName, buildId, productId) {
+    swal({
+      title: "Are you sure?", 
+      text: "You want to delete " + buildName, 
+      type: "warning",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      confirmButtonClass: "btn-warning",
+      confirmButtonText: "Delete it!",
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true
+    }, function() {
+      $.ajax({
+        url: "/products/" + productId + "/my_posts/" + buildId,
+        type: "DELETE",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        swal("Successfully Deleted!", buildName + " was successfully deleted!", "success");
+        $("#build_row_" + buildId).fadeOut();
+
+        $('button.confirm').click(function() {
+          setTimeout(function(){
+            $(location).attr('href', "/products/" + productId + "/my_posts")
+          }, 200);
+        });
+      })
+      .error(function(data) {
+        swal("Something went wrong", "We couldn't connect to the server!", "error");
+      });
+    });
+  }

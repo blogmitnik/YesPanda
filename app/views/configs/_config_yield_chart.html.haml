@@ -1,0 +1,256 @@
+%div
+  %ul.nav.nav-tabs{:role => "tablist"}
+    %li.active{:role => "presentation"}
+      %a{"aria-controls" => "bar-accu", "data-toggle" => "tab", :href => "#bar-accu", :role => "tab"} Accu Yield Bar
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "bar-daily", "data-toggle" => "tab", :href => "#bar-daily", :role => "tab"} Daily Yield Bar
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "donut", "data-toggle" => "tab", :href => "#donut", :role => "tab"} Distribution Donut
+  .tab-content
+    #bar-accu.tab-pane.fade.in.active{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Accu Yield Rate Variety of
+            = @station.name
+            &gt;
+            = params[:config]
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #81bef7;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "config-accu-yield-bar", data: {reports: @reports_for_cart}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+    #bar-daily.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .small{style: "margin-top: 15px; text-align: center;"}
+          %strong
+            Daily Yield Rate Variety of
+            = @station.name
+            &gt;
+            = params[:config]
+            from
+            = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+            \-
+            = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+        .chart-tags
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ff7070;"}
+            %span.badge-category Worst Yield Rate Level (0 ~ 89.99 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #ffc652;"}
+            %span.badge-category Bad Yield Rate Level (90.00 ~ 99.50 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #4da74d;"}
+            %span.badge-category Verified Yield Rate Level (99.51 ~ 100 %)
+          .badge-wrapper.bullet
+            %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+            %span.badge-category Undefined (More than 100 %)
+        = content_tag :div, "", id: "config-daily-yield-bar", data: {reports: @reports_for_cart}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+    #donut.tab-pane.fade{:role => "tabpanel"}
+      - if @reports_for_cart.count > 0
+        .col-sm-6
+          .small{style: "margin-top: 15px; text-align: center;"}
+            %strong
+              Accu yield level distribution of
+              = @station.name
+              &gt;
+              = params[:config]
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+          .chart-tags
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #6d6d6d;"}
+              %span.badge-category No Input
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #cb4b4b;"}
+              %span.badge-category Worst Level (0 ~ 89.99 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #f8aa33;"}
+              %span.badge-category Bad Level (90.00 ~ 99.50 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #1fbba6;"}
+              %span.badge-category Verified Level (99.51 ~ 100 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #81bef7;"}
+              %span.badge-category Undefined (More than 100 %)
+          = content_tag :div, "", id: "accu-yield-config-ratio", data: {reports: config_accu_yield_bar_chart_data(@reports_for_cart)}
+
+        .col-sm-6
+          .small{style: "margin-top: 15px; text-align: center;"}
+            %strong
+              Daily yield level distribution of
+              = @station.name
+              &gt;
+              = params[:config]
+              from
+              = @reports_for_cart.minimum('published_at').to_date.to_formatted_s(:short)
+              \-
+              = @reports_for_cart.maximum('published_at').to_date.to_formatted_s(:short)
+          .chart-tags
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #848484;"}
+              %span.badge-category No Input
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #ff7070;"}
+              %span.badge-category Worst Level (0 ~ 89.99 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #ffc652;"}
+              %span.badge-category Bad Level (90.00 ~ 99.50 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #4da74d;"}
+              %span.badge-category Verified Level (99.51 ~ 100 %)
+            .badge-wrapper.bullet
+              %span.badge-category-bg{:style => "background-color: #afd8f8;"}
+              %span.badge-category Undefined (More than 100 %)
+          = content_tag :div, "", id: "daily-yield-config-ratio", data: {reports: config_daily_yield_bar_chart_data(@reports_for_cart)}
+      - else
+        .well{:style => "margin-top: 10px;"}
+          .blankslate.text-center
+            %h3 No Chart
+            %p We have no data to draw the chart
+
+:javascript
+  jQuery(function() {
+    $('ul.nav a').on('shown.bs.tab', function (e) {
+      bar_graph1.redraw();
+      bar_graph2.redraw();
+      donut_graph_accu.redraw();
+      donut_graph_daily.redraw();
+      $('svg').css({ width: '100%' });
+    });
+    var bar_graph1 = Morris.Bar({
+      element: 'config-accu-yield-bar',
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#config-accu-yield-bar').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['yield_rate'],
+      labels: ['Accu Yield'],
+      postUnits: '%',
+      parseTime: false,
+      ymin: 'auto',
+      ymax: 'auto',
+      barOpacity: 0.7,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#1fbba6';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#f8aa33';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#cb4b4b';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      hoverCallback: function(index, options, content) {
+        var data = options.data[index];
+        var year = new Date(data.published_at).getUTCFullYear();
+        var IndexToMonth = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+        var month = IndexToMonth[ new Date(data.published_at).getMonth() ];
+        var date = new Date(data.published_at).getUTCDate();
+        var hour = new Date(data.published_at).getUTCHours();
+        var minute = new Date(data.published_at).getUTCMinutes();
+        var accu_yield = data.yield_rate == null? 'No Input' : data.yield_rate + options.postUnits;
+        
+        return '<div><strong>' + month + ' ' + date + ' ' + year  + '<br>' + hour + ':' + minute + '</strong></div>' + '<div>' + 'Accu Yield: ' + accu_yield + '</div>';
+      }
+    });
+
+    var bar_graph2 = Morris.Bar({
+      element: 'config-daily-yield-bar',
+      resize: true,
+      hideHover: 'auto',
+      continuousLine: true,
+      data: $('#config-daily-yield-bar').data('reports'),
+      goals: [90, 95.5, 100],
+      goalLineColors: ['#e74c3c', '#e67e22', '#2ecc71'],
+      xkey: 'published_at',
+      ykeys: ['yield_rate_today'],
+      labels: ['Daily Yield'],
+      postUnits: '%',
+      parseTime: false,
+      ymin: 'auto',
+      ymax: 'auto',
+      barOpacity: 0.7,
+      barColors: function(row, series, type) {
+        if (type === 'bar') {
+          if (row.y > 100) {
+            return '#afd8f8';
+          } else if (row.y >= 99.51 && row.y <= 100) {
+            return '#4da74d';
+          } else if (row.y >= 90.00 && row.y <= 99.50) {
+            return '#ffc652';
+          } else if (row.y >= 0 && row.y <= 89.99) {
+            return '#ff7070';
+          }
+        } else {
+          return '#000';
+        }
+      },
+      hoverCallback: function(index, options, content) {
+        var data = options.data[index];
+        var year = new Date(data.published_at).getUTCFullYear();
+        var IndexToMonth = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+        var month = IndexToMonth[ new Date(data.published_at).getMonth() ];
+        var date = new Date(data.published_at).getUTCDate();
+        var hour = new Date(data.published_at).getUTCHours();
+        var minute = new Date(data.published_at).getUTCMinutes();
+        var daily_yield = data.yield_rate_today == null? 'No Input' : data.yield_rate_today + options.postUnits;
+        
+        return '<div><strong>' + month + ' ' + date + ' ' + year  + '<br>' + hour + ':' + minute + '</strong></div>' + '<div>' + 'Daily Yield: ' + daily_yield + '</div>';
+      }
+    });
+
+    var donut_graph_accu = Morris.Donut({
+      resize: true,
+      element: 'accu-yield-config-ratio',
+      data: $('#accu-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#1fbba6', '#f8aa33', '#cb4b4b', '#6d6d6d'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+    var donut_graph_daily = Morris.Donut({
+      resize: true,
+      element: 'daily-yield-config-ratio',
+      data: $('#daily-yield-config-ratio').data('reports'),
+      backgroundColor: '#ddd',
+      labelColor: '#666',
+      colors: ['#afd8f8', '#4da74d', '#ffc652', '#ff7070', '#848484'],
+      formatter: function (x, data) { return data.percent + '% (' + x + ')'; }
+    });
+  });

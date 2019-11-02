@@ -1,0 +1,30 @@
+<header class="page-header"><h2>Your applications</h2></header>
+
+<div class="row">
+  <table class="table table-bordered table-striped span12">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Callback url</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @applications.each do |application| %>
+        <tr id="application_<%= application.id %>">
+          <td><%= link_to application.name, application %></td>
+          <td><%= application.redirect_uri %></td>
+          <td><%= link_to 'Edit', edit_application_path(application), :class => "btn btn-success" %></td>
+          <td><%= link_to 'Destroy', application, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: 'btn btn-danger' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="row">
+  <div class="span12">
+    <p><%= link_to 'New Application', new_application_path %></p>
+  </div>
+</div>

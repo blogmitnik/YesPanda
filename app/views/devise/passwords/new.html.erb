@@ -1,0 +1,14 @@
+<% navigation_add 'Reset password', new_password_path(resource_name) %>
+
+<div class="container">
+  <%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post, :class => "form-signin" }) do |f| %>
+      <%= devise_error_messages! %>
+    <h2 class="form-signin-heading">Forgot password?</h2>
+    <%= f.label :email, "Email address", class: "sr-only" %>
+    <%= f.email_field :email, class: "form-control required", id: "formGroupInputLarge", placeholder: "Email address", autofocus: "autofocus" %>
+    <br>
+    <button type="submit" class="btn btn-lg btn-primary btn-block">Reset my password</button>
+    <br>
+    <%= render "links" %>
+  <% end %>
+</div>

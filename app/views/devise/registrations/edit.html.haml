@@ -1,0 +1,100 @@
+- navigation_add 'Edit Profile', '/users/edit'
+
+%h2
+  Edit Profile
+%hr.colorgraph
+.col-lg-12.well
+  .row
+    .col-md-9.personal-info
+      = form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => "form-horizontal", role: "form" }) do |f|
+        .form-group
+          = f.label :email, class: "col-lg-3 control-label"
+          .col-lg-8
+            = f.email_field :email, class: "form-control input-lg", id: "email-field"
+        .form-group
+          = f.label :password, class: "col-lg-3 control-label"
+          .col-lg-8
+            = f.password_field :password, class: "form-control input-lg", :autocomplete => "off", id: "pwd-field"
+            %span.pwstrength_progress
+            %span.help-block leave blank if you don't want to change it
+        .form-group
+          = f.label :password_confirmation, class: "col-lg-3 control-label"
+          .col-lg-8
+            = f.password_field :password_confirmation, class: "form-control input-lg", id: "confirm-pwd-field"
+        .form-group
+          = f.label :current_password, class: "col-lg-3 control-label"
+          .col-lg-8
+            = f.password_field :current_password, class: "form-control input-lg", id: "cur-pwd-field"
+            %span.help-block we need your current password to confirm your changes
+        .form-group
+          %label.col-lg-3.control-label
+          .col-md-8
+            /%button.btn.btn-primary.btn-lg{:type => "submit"} Save Changes
+            = submit_tag 'Save Changes', class: 'btn btn-primary btn-lg tclick', id: 'sendButton', data: { disable_with: "Saving Changes..." }
+
+    .col-md-3.input-group
+      %h3 Unhappy?
+      %span.help-block Cancel your account now
+      /= link_to "Cancel account", registration_path(resource_name), :data => { :confirm => "This is serious monkey business! Are you sure?" }, :method => :delete, class: "btn btn-danger", id: "delete-my-account"
+      = link_to "Cancel account", '#', class: "btn btn-zoomshift", id: "delete-my-account"
+
+:javascript
+  $(document).ready(function (){
+    validate();
+    $('#email-field, #pwd-field, #confirm-pwd-field, #cur-pwd-field').keyup(validate);
+  });
+
+  function validate(){
+    if ( $('#email-field').val().length > 0 &&
+      $('#pwd-field').val().length > 0 &&
+      $('#confirm-pwd-field').val().length > 0 &&
+      $('#cur-pwd-field').val().length > 0) {
+      $("input[type=submit]").prop("disabled", false);
+    }
+    else {
+      $("input[type=submit]").prop("disabled", true);
+    }
+  }
+
+  $("#delete-my-account").click(function() {
+    swal({
+      title: "This is serious monkey business! Are you sure?", 
+      text: "If you are sure, type in your password:", 
+      type: "input",
+      inputType: "password",
+      showCancelButton: true,
+      confirmButtonClass: "btn-danger",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel",
+      closeOnConfirm: false,
+      closeOnCancel: true,
+      showLoaderOnConfirm: true
+    }, function(typedPassword) {
+
+      if (typedPassword === false) return false;
+      if (typedPassword === "") {
+        swal.showInputError("You need to type in your password in order to do this!");
+        return false;
+      }
+      $.ajax({
+        url: "/delete_account",
+        data: { password: typedPassword },
+        type: "POST",
+        dataType: 'script'
+      })
+      .done(function(data) {
+        setTimeout(function(){
+          swal("Successfully Deleted!", "Your account has been deleted!", "success");
+
+          $('button.confirm').click(function() {
+            setTimeout(function(){
+              $(location).attr('href','/')
+            }, 1000);
+          });
+        }, 2000);
+      })
+      .error(function(data) {
+        swal.showInputError("Your password is wrong!");
+      });
+    });
+  });

@@ -1,0 +1,8 @@
+$('#yield-items').html("<%= j(render :partial => 'shared/yield_items') %>");
+$('#paginator').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#paginator-top').html('<%= escape_javascript(paginate(@reports, :remote => true).to_s) %>');
+$('#page-info').html("<%= j(render :partial => 'shared/page_info') %>");
+$('#date-selector').html("<%= j(render :partial => 'shared/date_selector') %>");
+$('#date-range').html("<%= j(render :partial => 'shared/date_range') %>");
+$('#station-yield-cart').html("<%= j(render :partial => 'station_yield_cart') %>");
+$(".pagination").rPage();

@@ -1,0 +1,31 @@
+- build_type = params[:build].nil? ? "" : " (" + params[:build].to_s.upcase + ")"
+
+- if params[:station].present? && params[:station] != '' && params[:config].present? && params[:config] != ''
+  %h4 Quick search #{params[:config]} config of #{params[:station]} in #{@post.title}
+- elsif params[:station].present? && params[:station] != ''
+  %h4 Quick search #{params[:station]} in #{@post.title}
+- else
+  %h4 Quick search for #{@post.title + build_type}
+
+- if @reports_for_cart.count > 0
+  %span.glyphicon.glyphicon-calendar
+  %strong Fetched data from datetime range:
+  .badge
+    = @reports_for_cart.minimum('published_at').to_formatted_s(:long)
+    - unless @reports_for_cart.first.published_at == @reports_for_cart.last.published_at
+      \-
+      = @reports_for_cart.maximum('published_at').to_formatted_s(:long)
+- else
+  %span.glyphicon.glyphicon-exclamation-sign
+  No Data
+
+- if params[:date_range].present?
+  - start_year = params[:date_range][0, 4]
+  - start_month = params[:date_range][5, 2].to_i < 10 ? params[:date_range][6, 1].to_i - 1 : params[:date_range][5, 2].to_i - 1
+  - start_day = params[:date_range][8, 2].to_i < 10 ? params[:date_range][9, 1].to_i : params[:date_range][8, 2].to_i
+
+  - end_year = params[:date_range][13, 4]
+  - end_month = params[:date_range][18, 2].to_i < 10 ? params[:date_range][19, 1].to_i - 1 : params[:date_range][18, 2].to_i - 1
+  - end_day = params[:date_range][21, 2].to_i < 10 ? params[:date_range][22, 1].to_i : params[:date_range][21, 2].to_i
+
+  #hidden-date-range{"data-date-from" => params[:date_range][0, 10], "data-date-to" => params[:date_range][13, 10], "data-year-from" => start_year, "data-month-from" => start_month, "data-day-from" => start_day, "data-year-to" => end_year, "data-month-to" => end_month, "data-day-to" => end_day}

@@ -1,0 +1,33 @@
+- navigation_add 'Products', products_path
+- navigation_add 'Builds', product_my_posts_path(@product)
+- navigation_add 'Yield Files', product_my_post_yield_files_path(@product, @post)
+- navigation_add @file.file_name, product_my_post_yield_file_path(@product, @post, @file)
+
+%header.page-header
+  %h2= @file.file_name
+  %p.lead All yield records belong to selected yield report file
+  
+.row
+  .container
+    - if @reports.count > 0
+      .panel.panel-default
+        .panel-heading
+          %span.glyphicon.glyphicon-list
+          = "Yield records from the file"
+        .panel-body
+          #yield-items
+            = render :partial => "shared/yield_items"
+        .panel-footer
+          .row
+            .col.col-xs-4
+              #page-info{:style => "margin-top: 5px"}
+                = render :partial => "shared/page_info"
+            .col.col-xs-8
+              #paginator
+                = paginate @reports, remote: true
+
+:javascript
+  $(document).ready(function() {
+    // hide spinner
+    $(".sk-three-bounce").hide();
+  });

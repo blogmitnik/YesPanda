@@ -1,0 +1,4 @@
+%h4.list-group-item-heading
+  = @post.yield_files.count.to_i 
+  imported file#{@post.yield_files.count > 1 ? 's' : ''}
+%p.list-group-item-text Delete a file will also remove all yield records belong to it

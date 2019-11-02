@@ -1,0 +1,44 @@
+!!! 5
+%html
+  %head
+    %meta{ :charset => "utf-8" }
+    %title YesPanda
+    = stylesheet_link_tag "application", :media => "all", "data-turbolinks-track" => true
+    /= stylesheet_link_tag "bootstrap-responsive.css", :media => "all"
+    = stylesheet_link_tag "bootplus-responsive.css", :media => "all", "data-turbolinks-track" => true
+    /[if lt IE 9]
+      %script{ :src => "http://html5shim.googlecode.com/svn/trunk/html5.js" }
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+    %meta{ :name => "viewport", :content => "width=device-width, initial-scale=1.0" }
+  %body
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container
+          %button.btn.btn-navbar{ :type => "button", "data-toggle" => "collapse", "data-target" => ".nav-collapse" }
+            %span.icon-bar
+            %span.icon-bar
+            %span.icon-bar
+          = link_to "Yespanda Admin", "/admin", :class => "brand"
+          %ul.nav.pull-right
+            - if admin_user_signed_in?
+              %li= link_to current_admin_user.email, "/admin"
+              %li= link_to "Logout", "/admin/logout", :method => :delete
+            - else
+              %li= link_to "Login", "/admin/login"
+          .nav-collapse.collapse
+            %ul.nav.pull-right
+              %li= link_to "Dashboard", "/admin"
+              %li= link_to "Access Grants", "/admin/doorkeeper_access_grants"
+              %li= link_to "Access Tokens", "/admin/doorkeeper_access_tokens"
+              %li= link_to "YieldReport", "/admin/posts"
+              %li= link_to "Users", "/admin/users"
+              %li= link_to "Applications", "/oauth/applications"
+    .container
+      .row
+        - flash.each do |key, message|
+          .span12
+            .alert.alert-block{ :class => key }
+              %a.close{ :href => "#", "data-dismiss" => "alert" } &times;
+              = message
+      = yield

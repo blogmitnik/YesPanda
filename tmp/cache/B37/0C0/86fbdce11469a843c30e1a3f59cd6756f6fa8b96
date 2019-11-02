@@ -1,0 +1,9 @@
+o: ActiveSupport::Cache::Entry	:@compressedF:@expires_in0:@created_atf1473255367.682561:@value"‚[I"{(function() {
+  window.ActiveAdmin = {};
+
+  if (!window.AA) {
+    window.AA = window.ActiveAdmin;
+  }
+
+}).call(this);
+:ET

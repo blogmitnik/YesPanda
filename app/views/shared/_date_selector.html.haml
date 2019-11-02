@@ -1,0 +1,59 @@
+- if params[:commit] == 'GlobalSearch'
+  %ul.nav.nav-tabs{:style => "margin-bottom: 5px;"}
+    / Show tab for Global Search results
+    %li.active{:role => "presentation"}
+      %a{:href => "#"}
+        %span.glyphicon.glyphicon-search
+        Search Results
+        %span.badge= @reports_for_cart.count.to_i
+- else
+  %ul.nav.nav-tabs{:style => "margin-bottom: 5px;"}
+    - if params[:date].nil? && params[:date_range].nil?
+      %li.active{:role => "presentation"}
+        %a.date_select_tab{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :date => 'today', :from_station => params[:from_station], :build => params[:build])}
+          %span.glyphicon.glyphicon-inbox
+          Today
+          - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :page => params[:page], :build => params[:build])
+            %span.badge= @reports_for_cart.count.to_i
+    - else
+      %li{:role => "presentation", :class => active_class(:controller => controller.controller_name, :action => controller.action_name, :date => 'today', :data_period => params[:data_period], :from_station => params[:from_station], :page => params[:page], :build => params[:build])}
+        %a.date_select_tab{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :from_station => params[:from_station], :date => 'today', :build => params[:build])}
+          %span.glyphicon.glyphicon-inbox
+          Today
+          - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :date => 'today', :data_period => params[:data_period], :from_station => params[:from_station], :page => params[:page], :build => params[:build])
+            %span.badge= @reports_for_cart.count.to_i
+    %li{:role => "presentation", :class => active_class(:controller => controller.controller_name, :action => controller.action_name, :date => 'yesterday', :data_period => params[:data_period], :from_station => params[:from_station], :page => params[:page], :build => params[:build])}
+      %a.date_select_tab{:href => url_for(:controller => controller.controller_name, :action => controller.action_name, :date => 'yesterday', :from_station => params[:from_station], :build => params[:build])}
+        %span.glyphicon.glyphicon-calendar
+        Yesterday
+        - if current_page?(:controller => controller.controller_name, :action => controller.action_name, :date => 'yesterday', :data_period => params[:data_period], :from_station => params[:from_station], :page => params[:page], :build => params[:build])
+          %span.badge= @reports_for_cart.count.to_i
+    / Show tab for Search results
+    - if !params[:date_range].nil?
+      %li.active{:role => "presentation"}
+        %a{:href => "#"}
+          %span.glyphicon.glyphicon-search
+          Search Results
+          %span.badge= @reports_for_cart.count.to_i
+
+:javascript
+  $(document).ready(function() {
+    $('.date_select_tab').click(function() {
+      // show spinner on AJAX start
+      $(document).ajaxStart(function(){
+        $(".sk-three-bounce").show();
+        $("#search-box").fadeTo("fast", 0.3);
+        $("#date-selector").fadeTo("fast", 0.3);
+        $(".record_lists").fadeTo("fast", 0.3);
+        $(".chart_section").fadeTo("fast", 0.3);
+      });
+      // hide spinner on AJAX stop
+      $(document).ajaxStop(function(){
+        $(".sk-three-bounce").hide();
+        $("#search-box").fadeTo("fast", 1.0);
+        $("#date-selector").fadeTo("fast", 1.0);
+        $(".record_lists").fadeTo("fast", 1.0);
+        $(".chart_section").fadeTo("fast", 1.0);
+      });
+    });
+  });

@@ -1,0 +1,5 @@
+- if @reports.count > 0
+  #{@reports.offset_value + 1}〜#{@reports.offset_value + @reports.length} of 
+  #{@reports.total_count} records in page: #{@reports.current_page} / #{@reports.total_pages}
+- else
+  No record

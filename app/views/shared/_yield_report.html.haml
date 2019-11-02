@@ -1,0 +1,113 @@
+/#paginator-top
+/  = paginate @reports, remote: true
+.panel.panel-default
+  .panel-heading
+    .row
+      .col.col-xs-4
+        %span.glyphicon.glyphicon-stats
+        = "Overview"
+      .col.col-xs-8.text-right
+        .btn-group
+          #dropdown-product-selector
+            %button.btn.btn-basecamp.btn-sm.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :type => "button", :id => "buildSelector"}
+              %span.glyphicon.glyphicon-tasks{"aria-hidden" => "true"}
+              Products
+              %span.caret
+              %span.sr-only Toggle Dropdown
+            %ul.dropdown-menu.product
+              - @products = Product.all(order: "title ASC")
+              - @products.each do |p|
+                %li
+                  %a{:href => "#"}
+                    = p.title
+        .btn-group
+          #dropdown-build-selector
+            = render :partial => "shared/dropdown_build_selector"
+
+  .panel-body
+    #search-box
+      - if controller.controller_name == 'reports' && params[:commit] == "GlobalSearch"
+        = render :partial => "shared/global_search_box"
+      - else
+        = render :partial => "shared/search_box"
+
+    / Yield Report Chart
+    - if controller.controller_name == 'reports'
+      - if params[:config].present? && params[:config] != ""
+        #yield-ratio-chart-data.chart_section{:style => "margin-bottom: 20px"}
+          = render :partial => "configs/config_yield_chart"
+      - elsif params[:station].present? && params[:station] != ""
+        #station-yield-cart.chart_section{:style => "margin-bottom: 20px"}
+          = render :partial => "stations/station_yield_cart"
+      - else
+        #worst-yield-cart.chart_section{:style => "margin-bottom: 20px"}
+          = render :partial => "my_posts/worst_yield_cart"
+    - elsif controller.controller_name == 'my_posts'
+      #worst-yield-cart.chart_section{:style => "margin-bottom: 20px"}
+        = render :partial => "my_posts/worst_yield_cart"
+    - elsif controller.controller_name == 'stations'
+      #station-yield-cart.chart_section{:style => "margin-bottom: 20px"}
+        = render :partial => "stations/station_yield_cart"
+
+    / Date Range Slider Box
+    /.entry-meta.row
+    /  %aside.meta-details-slider
+    /    #date-slider-box
+    /      = render :partial => "shared/date_slider"
+
+    / Date Selector Tab
+    #date-selector
+      = render :partial => "shared/date_selector"
+
+    .sk-three-bounce
+      .sk-child.sk-bounce1
+      .sk-child.sk-bounce2
+      .sk-child.sk-bounce3
+
+    #yield-items
+      = render :partial => "shared/yield_items", :object => @reports
+
+    / 'Load more report' button
+    #paginator
+      = link_to_next_page @reports, 'Load more report', params: params, remote: true
+    
+  .panel-footer
+    .row
+      .col.col-xs-6
+        #page-info{:style => "margin-top: 5px"}
+          = render :partial => "shared/page_info_scroll"
+      .col.col-xs-6
+        
+
+/ Import file modal
+= render :partial => "shared/csv_importer"
+
+:javascript
+  $(".dropdown-menu.product li a").click(function(event, data, status, xhr) {
+    $("#buildSelector").dropdown("toggle");
+
+    var selBuild = $(this).text();
+    $(this).parents('.btn-group').find('.dropdown-toggle').html('<span class="glyphicon glyphicon-tasks"></span>' + selBuild +' <span class="caret"></span>');
+
+    event.preventDefault();
+    return $.ajax({
+      url: '/update_builds_menu',
+      type: 'GET',
+      data: { product_name: selBuild },
+      dataType: 'script'
+    });
+  });
+
+  / # Setup plugin and define optional event callbacks
+  / $('.infinite-table').infiniteScroll
+  /   debug: true
+  /   buffer: 200 # load new page when within 200px of nav link
+  /   context: '.pane' # define the scrolling container (defaults to window)
+  /   loading: ->
+  /     # jQuery callback on the nav element
+  /     $(this).text("Loading more reports...")
+  /   success: ->
+  /     # called after successful ajax call
+  /   error: ->
+  /     # called after failed ajax call
+  /     $(this).text("Trouble! Please drink some coconut water and click again")
